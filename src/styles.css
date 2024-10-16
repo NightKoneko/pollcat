@@ -80,3 +80,58 @@
     margin-bottom: 10px;
   }
   
+  /* Add styles for Active Polls */
+.active-poll-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  margin-bottom: 10px;
+}
+
+.delete-button {
+  background-color: #dc3545;
+  color: white;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.delete-button:hover {
+  background-color: #c82333;
+}
+
+/* Layout adjustments */
+.app-container {
+  display: flex;
+  justify-content: space-between;
+}
+
+.left-column, .right-column {
+  width: 48%;
+}
+
+@media (max-width: 768px) {
+  .app-container {
+    flex-direction: column;
+  }
+
+  .left-column, .right-column {
+    width: 100%;
+  }
+}
+
+/* Add styles for Poll Voting */
+select {
+  padding: 10px;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+p {
+  margin: 10px 0;
+}

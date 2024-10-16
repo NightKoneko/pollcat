@@ -1,0 +1,75 @@
+/* src/components/PollVoting.css */
+
+.poll-container {
+    width: 80%;
+    margin: 0 auto;
+  }
+  
+  .poll-list {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .poll-item {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    padding: 10px;
+    background-color: #f9f9f9;
+  }
+  
+  .poll-title {
+    display: flex;
+    justify-content: space-between;
+    cursor: pointer;
+    padding: 10px;
+  }
+  
+  .poll-title h3 {
+    margin: 0;
+    font-size: 1.2em;
+  }
+  
+  .toggle-button {
+    background: none;
+    border: none;
+    font-size: 1.5em;
+    cursor: pointer;
+  }
+  
+  .poll-options {
+    margin-top: 10px;
+    padding: 10px;
+    background-color: #ffffff;
+    border-top: 1px solid #ddd;
+  }
+  
+  .poll-options ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .poll-options ul li {
+    margin-bottom: 10px;
+  }
+  
+  .vote-button {
+    padding: 10px 20px;
+    background-color: #28a745;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .vote-button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+  
+  .error {
+    color: red;
+    margin-top: 10px;
+  }
+  
+  

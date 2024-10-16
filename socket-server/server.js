@@ -1,4 +1,4 @@
-
+// server.js
 const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
@@ -12,7 +12,8 @@ const io = new Server(server, {
 });
 
 let activePolls = []; // Store active polls
-let votes = {};
+let votes = {}; // Store poll results
+let userVotes = {}; // Track which polls users have voted in
 
 io.on('connection', (socket) => {
   console.log('a user connected');
@@ -25,16 +26,22 @@ io.on('connection', (socket) => {
     const newPoll = { ...poll, id: pollId };
     activePolls.push(newPoll);
     votes[pollId] = Array(poll.options.length).fill(0);
+    userVotes[socket.id] = userVotes[socket.id] || {};
 
     io.emit('active-polls', activePolls); // Broadcast active polls to all clients
-    io.emit('poll', newPoll); // Broadcast the new poll
   });
 
   socket.on('vote', ({ pollId, optionIndex }) => {
-    if (votes[pollId] && votes[pollId][optionIndex] !== undefined) {
-      votes[pollId][optionIndex] += 1;
-      const poll = activePolls.find(p => p.id === pollId);
-      io.emit('poll-results', { options: poll.options, votes: votes[pollId] });
+    if (!userVotes[socket.id][pollId]) {
+      if (votes[pollId] && votes[pollId][optionIndex] !== undefined) {
+        votes[pollId][optionIndex] += 1;
+        userVotes[socket.id][pollId] = true; // Mark that the user has voted in this poll
+
+        const poll = activePolls.find(p => p.id === pollId);
+        io.emit('poll-results', { pollId, options: poll.options, votes: votes[pollId] });
+      }
+    } else {
+      socket.emit('vote-failed', 'You have already voted in this poll.');
     }
   });
 
@@ -46,6 +53,7 @@ io.on('connection', (socket) => {
 
   socket.on('disconnect', () => {
     console.log('user disconnected');
+    delete userVotes[socket.id];
   });
 });
 

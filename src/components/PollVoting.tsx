@@ -1,52 +1,114 @@
+// src/components/PollVoting.tsx
 import React, { useEffect, useState } from 'react';
 import socket from '../socket.ts';
+import './PollVoting.css'; // We'll define some styles here.
 
 interface Poll {
+  id: number;
   question: string;
   options: string[];
 }
 
 const PollVoting: React.FC = () => {
-  const [poll, setPoll] = useState<Poll | null>(null);
+  const [polls, setPolls] = useState<Poll[]>([]);
+  const [expandedPollId, setExpandedPollId] = useState<number | null>(null);
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
+  const [voteError, setVoteError] = useState<string | null>(null);
+  const [hasVoted, setHasVoted] = useState<{ [key: number]: boolean }>({});
 
   useEffect(() => {
-    socket.on('poll', (pollData: Poll) => {
-      setPoll(pollData);
+    // Listen for active polls from the server
+    socket.on('active-polls', (activePolls: Poll[]) => {
+      setPolls(activePolls);
+    });
+
+    // Listen for vote failures (e.g., if user has already voted)
+    socket.on('vote-failed', (message: string) => {
+      setVoteError(message);
     });
 
     return () => {
-      socket.off('poll');
+      socket.off('active-polls');
+      socket.off('vote-failed');
     };
   }, []);
 
-  const handleVote = () => {
-    if (selectedOption !== null && poll) {
-      socket.emit('vote', { optionIndex: selectedOption });
+  // Check if the user has voted in the selected poll
+  const checkIfVoted = (pollId: number) => {
+    const votedPolls = JSON.parse(localStorage.getItem('votedPolls') || '[]');
+    return votedPolls.includes(pollId);
+  };
+
+  const handleVote = (pollId: number) => {
+    if (selectedOption !== null && !hasVoted[pollId]) {
+      socket.emit('vote', { pollId, optionIndex: selectedOption });
+
+      // Save poll ID in localStorage to prevent multiple votes
+      const votedPolls = JSON.parse(localStorage.getItem('votedPolls') || '[]');
+      votedPolls.push(pollId);
+      localStorage.setItem('votedPolls', JSON.stringify(votedPolls));
+
+      setHasVoted({ ...hasVoted, [pollId]: true });
+      setSelectedOption(null);
+      setVoteError(null);
     }
   };
 
-  if (!poll) return <div>Loading poll...</div>;
+  const togglePoll = (pollId: number) => {
+    setExpandedPollId(expandedPollId === pollId ? null : pollId);
+
+    // Check if the user has already voted in this poll
+    setHasVoted({ ...hasVoted, [pollId]: checkIfVoted(pollId) });
+  };
 
   return (
-    <div>
-      <h2>{poll.question}</h2>
-      <ul>
-        {poll.options.map((option, index) => (
-          <li key={index}>
-            <label>
-              <input 
-                type="radio" 
-                name="option" 
-                value={index} 
-                onChange={() => setSelectedOption(index)} 
-              />
-              {option}
-            </label>
-          </li>
-        ))}
-      </ul>
-      <button onClick={handleVote}>Submit Vote</button>
+    <div className="poll-container">
+      <h2>Active Polls</h2>
+      {polls.length > 0 ? (
+        <ul className="poll-list">
+          {polls.map((poll) => (
+            <li key={poll.id} className="poll-item">
+              <div className="poll-title" onClick={() => togglePoll(poll.id)}>
+                <h3>{poll.question}</h3>
+                <button className="toggle-button">
+                  {expandedPollId === poll.id ? '-' : '+'}
+                </button>
+              </div>
+              {expandedPollId === poll.id && (
+                <div className="poll-options">
+                  <ul>
+                    {poll.options.map((option, index) => (
+                      <li key={index}>
+                        <label>
+                          <input 
+                            type="radio" 
+                            name={`option-${poll.id}`} 
+                            value={index} 
+                            onChange={() => setSelectedOption(index)} 
+                            checked={selectedOption === index}
+                            disabled={hasVoted[poll.id]}
+                          />
+                          {option}
+                        </label>
+                      </li>
+                    ))}
+                  </ul>
+                  <button 
+                    onClick={() => handleVote(poll.id)} 
+                    disabled={selectedOption === null || hasVoted[poll.id]}
+                    className="vote-button"
+                  >
+                    {hasVoted[poll.id] ? 'Already Voted' : 'Submit Vote'}
+                  </button>
+                  {voteError && <p className="error">{voteError}</p>}
+                </div>
+              )}
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p>No active polls to vote on.</p>
+      )}
     </div>
   );
 };

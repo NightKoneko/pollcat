@@ -1,16 +1,24 @@
 // src/App.tsx
 import React from 'react';
-import PollCreation from './components/PollCreation.tsx';
-import PollVoting from './components/PollVoting.tsx';
-import PollResults from './components/PollResults.tsx';
+import PollCreation from './components/PollCreation';
+import PollVoting from './components/PollVoting';
+import PollResults from './components/PollResults';
+import ActivePolls from './components/ActivePolls';
 
 const App: React.FC = () => {
   return (
     <div>
-      <h1>Poll</h1>
-      <PollCreation />
-      <PollVoting />
-      <PollResults />
+      <h1>Real-time Polling App</h1>
+      <div className="app-container">
+        <div className="left-column">
+          <PollCreation />
+          <ActivePolls />
+        </div>
+        <div className="right-column">
+          <PollVoting />
+          <PollResults />
+        </div>
+      </div>
     </div>
   );
 };
