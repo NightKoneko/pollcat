@@ -1,7 +1,6 @@
-// src/components/PollVoting.tsx
 import React, { useEffect, useState } from 'react';
 import socket from '../socket.ts';
-import './PollVoting.css'; // We'll define some styles here.
+import './PollVoting.css';
 
 interface Poll {
   id: number;
@@ -9,6 +8,7 @@ interface Poll {
   options: string[];
 }
 
+//dumb, make better later
 const PollVoting: React.FC = () => {
   const [polls, setPolls] = useState<Poll[]>([]);
   const [expandedPollId, setExpandedPollId] = useState<number | null>(null);
@@ -17,12 +17,12 @@ const PollVoting: React.FC = () => {
   const [hasVoted, setHasVoted] = useState<{ [key: number]: boolean }>({});
 
   useEffect(() => {
-    // Listen for active polls from the server
+   
     socket.on('active-polls', (activePolls: Poll[]) => {
       setPolls(activePolls);
     });
 
-    // Listen for vote failures (e.g., if user has already voted)
+   
     socket.on('vote-failed', (message: string) => {
       setVoteError(message);
     });
@@ -33,7 +33,7 @@ const PollVoting: React.FC = () => {
     };
   }, []);
 
-  // Check if the user has voted in the selected poll
+ 
   const checkIfVoted = (pollId: number) => {
     const votedPolls = JSON.parse(localStorage.getItem('votedPolls') || '[]');
     return votedPolls.includes(pollId);
@@ -43,7 +43,7 @@ const PollVoting: React.FC = () => {
     if (selectedOption !== null && !hasVoted[pollId]) {
       socket.emit('vote', { pollId, optionIndex: selectedOption });
 
-      // Save poll ID in localStorage to prevent multiple votes
+     
       const votedPolls = JSON.parse(localStorage.getItem('votedPolls') || '[]');
       votedPolls.push(pollId);
       localStorage.setItem('votedPolls', JSON.stringify(votedPolls));
@@ -57,7 +57,7 @@ const PollVoting: React.FC = () => {
   const togglePoll = (pollId: number) => {
     setExpandedPollId(expandedPollId === pollId ? null : pollId);
 
-    // Check if the user has already voted in this poll
+   
     setHasVoted({ ...hasVoted, [pollId]: checkIfVoted(pollId) });
   };
 
