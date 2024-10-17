@@ -1,7 +1,6 @@
-// src/socket.ts
 import { io } from "socket.io-client";
 
-// Connect to the server (use your actual backend URL in production)
-const socket = io("http://localhost:3000");
+const backendURL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:3000';  // Fallback for local dev
+const socket = io(backendURL);
 
 export default socket;
