@@ -1,6 +1,6 @@
-import { io } from "socket.io-client";
+import { io } from 'socket.io-client';
 
-const backendURL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:3000';  // Fallback for local dev
-const socket = io(backendURL);
+// Make sure this URL is your Render backend URL
+const socket = io('https://vite-react-fr3n.onrender.com/', { transports: ['websocket'] }); 
 
 export default socket;
