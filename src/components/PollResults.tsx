@@ -19,20 +19,7 @@ const PollResults: React.FC = () => {
     };
   }, []);
 
-  if (!results) return <div>Loading results...</div>;
-
-  return (
-    <div>
-      <h2>Poll Results</h2>
-      <ul>
-        {results.options.map((option, index) => (
-          <li key={index}>
-            {option}: {results.votes[index]} votes
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
+  if (!results) return <div></div>;
 };
 
 export default PollResults;

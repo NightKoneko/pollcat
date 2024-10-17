@@ -43,6 +43,14 @@ io.on('connection', (socket) => {
     }
   });
 
+  socket.on('toggle-poll', (pollId) => {
+    const poll = activePolls.find(p => p.id === pollId);
+    if (poll) {
+      // Emit both poll details and current vote counts when a poll is expanded
+      io.to(socket.id).emit('poll-results', { pollId, options: poll.options, votes: votes[pollId] });
+    }
+  });  
+
   socket.on('delete-poll', (pollId) => {
     activePolls = activePolls.filter(poll => poll.id !== pollId);
     delete votes[pollId];

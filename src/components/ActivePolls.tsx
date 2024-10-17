@@ -1,4 +1,5 @@
-// src/components/ActivePolls.tsx
+// this needs to be fixed, deleting polls crashes the server
+
 import React, { useEffect, useState } from 'react';
 import socket from '../socket.ts';
 

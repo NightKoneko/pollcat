@@ -8,7 +8,7 @@ import ActivePolls from './components/ActivePolls';
 const App: React.FC = () => {
   return (
     <div>
-      <h1>Real-time Polling App</h1>
+      <h1>Polls</h1>
       <div className="app-container">
         <div className="left-column">
           <PollCreation />
