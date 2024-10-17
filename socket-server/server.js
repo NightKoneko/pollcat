@@ -2,11 +2,12 @@ const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
 
+const backendURL = process.env.REACT_APP_BACKEND_URL
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: 'https://vite-react-fr3n.onrender.com/',  // Replace with your actual Vercel URL
+    origin: backendURL,
     methods: ['GET', 'POST'],
   },
 });
@@ -31,11 +32,15 @@ io.on('connection', (socket) => {
   });
 
   socket.on('vote', ({ pollId, optionIndex }) => {
+    if (!userVotes[socket.id]) {
+      userVotes[socket.id] = {};
+    }
+  
     if (!userVotes[socket.id][pollId]) {
       if (votes[pollId] && votes[pollId][optionIndex] !== undefined) {
         votes[pollId][optionIndex] += 1;
         userVotes[socket.id][pollId] = true;
-
+  
         const poll = activePolls.find(p => p.id === pollId);
         io.emit('poll-results', { pollId, options: poll.options, votes: votes[pollId] });
       }
@@ -43,6 +48,7 @@ io.on('connection', (socket) => {
       socket.emit('vote-failed', 'You have already voted in this poll.');
     }
   });
+  
 
   socket.on('toggle-poll', (pollId) => {
     const poll = activePolls.find(p => p.id === pollId);
