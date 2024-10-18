@@ -1,13 +1,27 @@
 const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
+const cors = require('cors');
 
 const backendURL = process.env.REACT_APP_BACKEND_URL
 const app = express();
+const allowedOrigins = ['https://vite-react-fr3n.onrender.com/', 'https://vite-react-topaz-rho.vercel.app', 'http://localhost:5173'];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) === -1) {
+      const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+      return callback(new Error(msg), false);
+    }
+    return callback(null, true);
+  }
+}));
+
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: 'https://vite-react-fr3n.onrender.com/',
+    origin: allowedOrigins,
     methods: ['GET', 'POST'],
   },
 });
