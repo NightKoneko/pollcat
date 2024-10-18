@@ -20,7 +20,7 @@ const PollCreation: React.FC = () => {
   };
 
   return (
-    <div>
+    <div className='container'>
       <h2>Create Poll</h2>
       <input 
         type="text" 

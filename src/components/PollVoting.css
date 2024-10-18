@@ -3,6 +3,13 @@
 .poll-container {
     width: 80%;
     margin: 0 auto;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    max-width: 600px;
+    width: 100%;
+    margin-top: 10px;
   }
   
   .poll-list {
