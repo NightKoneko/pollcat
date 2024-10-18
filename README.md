@@ -1,8 +1,13 @@
 # Polls
 
-Right now the server isn't being hosted anywhere so this is effectively broken (for now) but it will work in the future.
+Simple poll webapp, live web preview here: [https://vite-react-topaz-rho.vercel.app](https://vite-react-topaz-rho.vercel.app)
 
-### Running the server
+### Build
+```shell
+$ npm run build
+```
+
+### Running the backend server
 ```shell
 $ node socket-server/server.js
 ```
