@@ -1,4 +1,5 @@
 // this needs to be fixed, deleting polls crashes the server
+// ^^ I think above is fixed but I'm leaving it here for now
 
 import React, { useEffect, useState } from 'react';
 import socket from '../socket.ts';
