@@ -17,15 +17,17 @@ const PollCreation: React.FC = () => {
 
   const handleCreatePoll = () => {
     socket.emit('create-poll', { question, options });
+    setQuestion('');
+    setOptions(['', '']);
   };
 
-  return (
+  return ( 
     <div className='container'>
       <h2>Create Poll</h2>
-      <input 
-        type="text" 
-        value={question} 
-        onChange={(e) => setQuestion(e.target.value)} 
+      <input
+        type="text"
+        value={question}
+        onChange={(e) => setQuestion(e.target.value)}
         placeholder="Poll Question"
       />
       <div>
