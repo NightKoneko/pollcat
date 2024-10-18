@@ -10,12 +10,12 @@ interface Poll {
   options: string[];
 }
 
-const ActivePolls: React.FC = () => {
+const DeletePolls: React.FC = () => {
   const [polls, setPolls] = useState<Poll[]>([]);
 
   useEffect(() => {
-    socket.on('active-polls', (activePolls: Poll[]) => {
-      setPolls(activePolls);
+    socket.on('active-polls', (deletePolls: Poll[]) => {
+      setPolls(deletePolls);
     });
 
     return () => {
@@ -48,4 +48,4 @@ const ActivePolls: React.FC = () => {
   );
 };
 
-export default ActivePolls;
+export default DeletePolls;

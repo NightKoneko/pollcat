@@ -3,7 +3,7 @@ import React from 'react';
 import PollCreation from './components/PollCreation';
 import PollVoting from './components/PollVoting';
 import PollResults from './components/PollResults';
-import ActivePolls from './components/ActivePolls';
+import DeletePolls from './components/DeletePolls';
 
 const App: React.FC = () => {
   return (
@@ -12,7 +12,7 @@ const App: React.FC = () => {
       <div className="app-container">
         <div className="left-column">
           <PollCreation />
-          <ActivePolls />
+          <DeletePolls />
         </div>
         <div className="right-column">
           <PollVoting />
