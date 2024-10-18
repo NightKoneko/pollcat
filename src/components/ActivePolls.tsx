@@ -14,7 +14,6 @@ const ActivePolls: React.FC = () => {
   const [polls, setPolls] = useState<Poll[]>([]);
 
   useEffect(() => {
-    // Listen for active polls from the server
     socket.on('active-polls', (activePolls: Poll[]) => {
       setPolls(activePolls);
     });
@@ -30,7 +29,7 @@ const ActivePolls: React.FC = () => {
 
   return (
     <div className="container">
-      <h2>Active Polls</h2>
+      <h2>Delete Polls</h2>
       {polls.length > 0 ? (
         <ul>
           {polls.map((poll) => (
