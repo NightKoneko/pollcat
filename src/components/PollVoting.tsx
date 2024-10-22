@@ -70,7 +70,6 @@ const PollVoting: React.FC = () => {
     } else {
       setExpandedPollId(pollId);
 
-      // Request poll results from the server
       socket.emit('toggle-poll', pollId);
     }
 

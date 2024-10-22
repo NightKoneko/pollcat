@@ -1,4 +1,3 @@
-// src/App.tsx
 import React from 'react';
 import PollCreation from './components/PollCreation';
 import PollVoting from './components/PollVoting';
