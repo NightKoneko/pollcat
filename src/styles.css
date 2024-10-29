@@ -52,6 +52,14 @@
     border: 1px solid #ccc;
     border-radius: 5px;
   }
+
+  input[type="password"] {
+    width: calc(100% - 20px);
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
   
   ul {
     list-style: none;
