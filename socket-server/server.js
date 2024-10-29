@@ -25,17 +25,15 @@ app.use(cors({
   credentials: true,
 }));
 
-
 const SECRET_KEY = process.env.JWT_SECRET || 'JWT_SECRET';
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
     origin: allowedOrigins,
     methods: ['GET', 'POST'],
-    credentials: true, // If using cookies or authentication
+    credentials: true,
   },
 });
-
 
 const authenticateJWT = (req, res, next) => {
   const token = req.headers.authorization?.split(' ')[1];
@@ -61,28 +59,21 @@ const generateToken = (userId) => {
 app.post('/register', async (req, res) => {
   try {
     const { username, password } = req.body;
-
-    // Check if the body data is received correctly
     if (!username || !password) {
       return res.status(400).json({ error: 'Username and password are required' });
     }
 
-    // Check if the username already exists
     const existingUser = users.find((u) => u.username === username);
     if (existingUser) {
       return res.status(400).json({ error: 'Username already taken' });
     }
 
-    // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Save the new user
     users.push({ username, password: hashedPassword });
-
-    console.log(`User registered: ${username}`); // Log for debugging
+    console.log(`User registered: ${username}`);
     res.status(201).json({ message: 'User registered successfully' });
   } catch (error) {
-    console.error('Registration error:', error); // Log the error
+    console.error('Registration error:', error);
     res.status(500).json({ error: 'Server error during registration. Please try again later.' });
   }
 });
@@ -94,7 +85,24 @@ app.post('/login', async (req, res) => {
     return res.status(400).json({ error: 'Invalid credentials' });
   }
   const token = generateToken(user.username);
+  console.log(`User logged in: ${username}`);
   res.json({ token });
+});
+
+app.get('/users', authenticateJWT, (req, res) => {
+  console.log('User list requested');
+  res.json(users.map(u => ({ username: u.username })));
+});
+
+app.delete('/users/:username', authenticateJWT, (req, res) => {
+  const { username } = req.params;
+  const userIndex = users.findIndex(u => u.username === username);
+  if (userIndex === -1) {
+    return res.status(404).json({ error: 'User not found' });
+  }
+  users.splice(userIndex, 1);
+  console.log(`User deleted: ${username}`);
+  res.status(200).json({ message: `User ${username} deleted successfully` });
 });
 
 app.post('/polls', authenticateJWT, (req, res) => {
@@ -111,12 +119,12 @@ app.post('/polls/:pollId/vote', authenticateJWT, (req, res) => {
   const { pollId } = req.params;
   const { optionIndex } = req.body;
   const poll = activePolls.find((p) => p.id === parseInt(pollId));
-  
+
   if (!poll) return res.status(404).json({ error: 'Poll not found' });
   if (!votes[pollId] || votes[pollId][optionIndex] === undefined) {
     return res.status(400).json({ error: 'Invalid vote option' });
   }
-  
+
   votes[pollId][optionIndex] += 1;
   io.emit('poll-results', { pollId, options: poll.options, votes: votes[pollId] });
   res.status(200).json({ message: 'Vote recorded' });
@@ -125,7 +133,7 @@ app.post('/polls/:pollId/vote', authenticateJWT, (req, res) => {
 app.delete('/polls/:pollId', authenticateJWT, (req, res) => {
   const { pollId } = req.params;
   const pollIndex = activePolls.findIndex((p) => p.id === parseInt(pollId) && p.creator === req.user.userId);
-  
+
   if (pollIndex === -1) return res.status(404).json({ error: 'Poll not found or unauthorized' });
 
   activePolls.splice(pollIndex, 1);
@@ -140,11 +148,10 @@ io.use((socket, next) => {
 
   jwt.verify(token, SECRET_KEY, (err, decoded) => {
     if (err) return next(new Error('Authentication error: Invalid token'));
-    socket.user = decoded; // Attach user info to socket if needed
+    socket.user = decoded;
     next();
   });
 });
-
 
 io.on('connection', (socket) => {
   console.log('User connected:', socket.user.userId);
