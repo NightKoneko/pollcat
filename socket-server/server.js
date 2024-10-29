@@ -39,11 +39,26 @@ const generateToken = (userId) => {
 };
 
 app.post('/register', async (req, res) => {
-  const { username, password } = req.body;
-  const hashedPassword = await bcrypt.hash(password, 10);
-  users.push({ username, password: hashedPassword });
-  res.status(201).send('User registered');
+  try {
+    const { username, password } = req.body;
+
+    const existingUser = users.find((u) => u.username === username);
+    if (existingUser) {
+      return res.status(400).json({ error: 'Username already taken' });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    users.push({ username, password: hashedPassword });
+
+    console.log(`User registered: ${username}`);
+    res.status(201).send('User registered');
+  } catch (error) {
+    console.error('Registration error:', error);
+    res.status(500).json({ error: 'Registration failed. Please try again.' });
+  }
 });
+
 
 app.post('/login', async (req, res) => {
   const { username, password } = req.body;
