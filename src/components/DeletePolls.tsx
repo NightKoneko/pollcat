@@ -24,6 +24,7 @@ const DeletePolls: React.FC = () => {
   }, []);
 
   const handleDeletePoll = (pollId: number) => {
+    console.log(`Attempting to delete poll with ID: ${pollId}`);
     const confirmDelete = window.confirm('Are you sure you want to delete this poll?');
     if (confirmDelete) {
       socket.emit('delete-poll', pollId);
@@ -31,8 +32,7 @@ const DeletePolls: React.FC = () => {
         alert(error.message);
       });
     }
-  };
-  
+  };  
 
   return (
     <div className="container">
