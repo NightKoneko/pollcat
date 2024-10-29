@@ -1,96 +1,42 @@
 const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
 const cors = require('cors');
 
-const backendURL = process.env.REACT_APP_BACKEND_URL
 const app = express();
-const SECRET_KEY = 'JWT_SECRET';
-const allowedOrigins = ['https://vite-react-fr3n.onrender.com/', 'https://vite-react-topaz-rho.vercel.app', 'http://localhost:5173'];
+app.use(express.json());
 
-app.use(cors({
-  origin: function (origin, callback) {
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) === -1) {
-      const msg = 'ermmm sorry but no';
-      return callback(new Error(msg), false);
-    }
-    return callback(null, true);
-  }
-}));
-
+const SECRET_KEY = process.env.JWT_SECRET || 'JWT_SECRET';
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: allowedOrigins,
+    origin: ['https://vite-react-fr3n.onrender.com', 'http://localhost:5173'],
     methods: ['GET', 'POST'],
   },
 });
 
+const authenticateJWT = (req, res, next) => {
+  const token = req.headers.authorization?.split(' ')[1];
+  if (token) {
+    jwt.verify(token, SECRET_KEY, (err, user) => {
+      if (err) return res.sendStatus(403);
+      req.user = user;
+      next();
+    });
+  } else {
+    res.sendStatus(401);
+  }
+};
+
+const users = [];
 let activePolls = [];
 let votes = {};
-let userVotes = {};
-
-io.on('connection', (socket) => {
-  console.log('a user connected');
- 
-  socket.emit('active-polls', activePolls);
-
-  socket.on('create-poll', (poll) => {
-    const pollId = Date.now();
-    const newPoll = { ...poll, id: pollId };
-    activePolls.push(newPoll);
-    votes[pollId] = Array(poll.options.length).fill(0);
-    userVotes[socket.id] = userVotes[socket.id] || {};
-
-    io.emit('active-polls', activePolls);
-  });
-
-  socket.on('vote', ({ pollId, optionIndex }) => {
-    if (!userVotes[socket.id]) {
-      userVotes[socket.id] = {};
-    }
-  
-    if (!userVotes[socket.id][pollId]) {
-      if (votes[pollId] && votes[pollId][optionIndex] !== undefined) {
-        votes[pollId][optionIndex] += 1;
-        userVotes[socket.id][pollId] = true;
-  
-        const poll = activePolls.find(p => p.id === pollId);
-        io.emit('poll-results', { pollId, options: poll.options, votes: votes[pollId] });
-      }
-    } else {
-      socket.emit('vote-failed', 'You have already voted in this poll.');
-    }
-  });
-  
-
-  socket.on('toggle-poll', (pollId) => {
-    const poll = activePolls.find(p => p.id === pollId);
-    if (poll) {
-      io.to(socket.id).emit('poll-results', { pollId, options: poll.options, votes: votes[pollId] });
-    }
-  });  
-
-  socket.on('delete-poll', (pollId) => {
-    activePolls = activePolls.filter(poll => poll.id !== pollId);
-    delete votes[pollId];
-    io.emit('active-polls', activePolls);
-  });
-
-  socket.on('disconnect', () => {
-    console.log('user disconnected');
-    delete userVotes[socket.id];
-  });
-});
-
-// temporary "database"
-const users = [];
 
 const generateToken = (userId) => {
   return jwt.sign({ userId }, SECRET_KEY, { expiresIn: '1h' });
 };
-
 
 app.post('/register', async (req, res) => {
   const { username, password } = req.body;
@@ -101,31 +47,49 @@ app.post('/register', async (req, res) => {
 
 app.post('/login', async (req, res) => {
   const { username, password } = req.body;
-  const user = users.find(u => u.username === username);
-
-  if (!user) return res.status(400).json({ error: 'Invalid credentials' });
-
-  const isPasswordValid = await bcrypt.compare(password, user.password);
-  if (!isPasswordValid) return res.status(400).json({ error: 'Invalid credentials' });
-
+  const user = users.find((u) => u.username === username);
+  if (!user || !(await bcrypt.compare(password, user.password))) {
+    return res.status(400).json({ error: 'Invalid credentials' });
+  }
   const token = generateToken(user.username);
   res.json({ token });
 });
 
-const authenticateJWT = (req, res, next) => {
-  const token = req.headers.authorization?.split(' ')[1];
-  if (!token) return res.status(403).json({ error: 'Token required' });
-
-  jwt.verify(token, SECRET_KEY, (err, user) => {
-    if (err) return res.status(403).json({ error: 'Invalid token' });
-    req.user = user;
-    next();
-  });
-};
-
 app.post('/polls', authenticateJWT, (req, res) => {
-  // Handle creating a poll
-  // req.user will have the decoded user info from JWT
+  const { question, options } = req.body;
+  const pollId = Date.now();
+  const newPoll = { id: pollId, question, options, creator: req.user.userId };
+  activePolls.push(newPoll);
+  votes[pollId] = Array(options.length).fill(0);
+  io.emit('active-polls', activePolls);
+  res.status(201).json({ message: 'Poll created', poll: newPoll });
+});
+
+app.post('/polls/:pollId/vote', authenticateJWT, (req, res) => {
+  const { pollId } = req.params;
+  const { optionIndex } = req.body;
+  const poll = activePolls.find((p) => p.id === parseInt(pollId));
+  
+  if (!poll) return res.status(404).json({ error: 'Poll not found' });
+  if (!votes[pollId] || votes[pollId][optionIndex] === undefined) {
+    return res.status(400).json({ error: 'Invalid vote option' });
+  }
+  
+  votes[pollId][optionIndex] += 1;
+  io.emit('poll-results', { pollId, options: poll.options, votes: votes[pollId] });
+  res.status(200).json({ message: 'Vote recorded' });
+});
+
+app.delete('/polls/:pollId', authenticateJWT, (req, res) => {
+  const { pollId } = req.params;
+  const pollIndex = activePolls.findIndex((p) => p.id === parseInt(pollId) && p.creator === req.user.userId);
+  
+  if (pollIndex === -1) return res.status(404).json({ error: 'Poll not found or unauthorized' });
+
+  activePolls.splice(pollIndex, 1);
+  delete votes[pollId];
+  io.emit('active-polls', activePolls);
+  res.status(200).json({ message: 'Poll deleted' });
 });
 
 io.use((socket, next) => {
@@ -141,6 +105,26 @@ io.use((socket, next) => {
   }
 });
 
+io.on('connection', (socket) => {
+  console.log('User connected:', socket.user.userId);
+
+  socket.emit('active-polls', activePolls);
+
+  socket.on('vote', ({ pollId, optionIndex }) => {
+    if (votes[pollId] && votes[pollId][optionIndex] !== undefined) {
+      votes[pollId][optionIndex] += 1;
+      const poll = activePolls.find((p) => p.id === parseInt(pollId));
+      io.emit('poll-results', { pollId, options: poll.options, votes: votes[pollId] });
+    } else {
+      socket.emit('vote-failed', 'Invalid poll or option');
+    }
+  });
+
+  socket.on('disconnect', () => {
+    console.log('User disconnected');
+  });
+});
+
 server.listen(3000, () => {
-  console.log('listening on *:3000');
+  console.log('Backend server is running on port 3000');
 });
