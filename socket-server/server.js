@@ -4,6 +4,7 @@ const { Server } = require('socket.io');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const cors = require('cors');
+require('dotenv').config();
 
 const app = express();
 app.use(express.json());
@@ -135,16 +136,15 @@ app.delete('/polls/:pollId', authenticateJWT, (req, res) => {
 
 io.use((socket, next) => {
   const token = socket.handshake.auth.token;
-  if (token) {
-    jwt.verify(token, SECRET_KEY, (err, decoded) => {
-      if (err) return next(new Error('Authentication error'));
-      socket.user = decoded;
-      next();
-    });
-  } else {
-    next(new Error('Authentication error'));
-  }
+  if (!token) return next(new Error('Authentication error: Token missing'));
+
+  jwt.verify(token, SECRET_KEY, (err, decoded) => {
+    if (err) return next(new Error('Authentication error: Invalid token'));
+    socket.user = decoded; // Attach user info to socket if needed
+    next();
+  });
 });
+
 
 io.on('connection', (socket) => {
   console.log('User connected:', socket.user.userId);
