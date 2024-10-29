@@ -23,6 +23,7 @@ const PollVoting: React.FC = () => {
   const [hasVoted, setHasVoted] = useState<{ [key: number]: boolean }>({});
 
   useEffect(() => {
+    socket.emit('request-polls');
     socket.on('active-polls', (activePolls: Poll[]) => {
       setPolls(activePolls);
     });

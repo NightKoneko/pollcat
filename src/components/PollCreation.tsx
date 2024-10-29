@@ -16,10 +16,13 @@ const PollCreation: React.FC = () => {
   };
 
   const handleCreatePoll = () => {
-    socket.emit('create-poll', { question, options });
-    setQuestion('');
-    setOptions(['', '']);
+    if (question && options.every(option => option)) {
+      socket.emit('create-poll', { question, options });
+      setQuestion('');
+      setOptions(['', '']);
+    }
   };
+  
 
   return ( 
     <div className='container'>

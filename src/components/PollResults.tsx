@@ -10,16 +10,24 @@ const PollResults: React.FC = () => {
   const [results, setResults] = useState<PollResults | null>(null);
 
   useEffect(() => {
-    socket.on('poll-results', (resultsData: PollResults) => {
-      setResults(resultsData);
-    });
-
+    socket.emit('request-poll-results');
+    socket.on('poll-results', (resultsData: PollResults) => setResults(resultsData));
     return () => {
       socket.off('poll-results');
     };
   }, []);
 
-  if (!results) return <div></div>;
+  if (!results) return <div>Loading poll results...</div>;
+
+  return (
+    <div>
+      <h3>Poll Results</h3>
+      {results.options.map((option, index) => (
+        <p key={index}>{option}: {results.votes[index]} votes</p>
+      ))}
+    </div>
+  );
 };
+
 
 export default PollResults;
