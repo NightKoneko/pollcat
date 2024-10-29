@@ -7,15 +7,34 @@ const cors = require('cors');
 
 const app = express();
 app.use(express.json());
+const allowedOrigins = [
+  'https://vite-react-topaz-rho.vercel.app',
+  'http://localhost:5173',
+];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    } else {
+      return callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+}));
+
 
 const SECRET_KEY = process.env.JWT_SECRET || 'JWT_SECRET';
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: ['https://vite-react-fr3n.onrender.com', 'http://localhost:5173'],
+    origin: allowedOrigins,
     methods: ['GET', 'POST'],
+    credentials: true, // If using cookies or authentication
   },
 });
+
 
 const authenticateJWT = (req, res, next) => {
   const token = req.headers.authorization?.split(' ')[1];
