@@ -1,33 +1,28 @@
 import { useState } from 'react';
 import axios from 'axios';
 
-interface LoginProps {
-  onLogin: () => void;
-}
-
-const Login: React.FC<LoginProps> = ({ onLogin }) => {
+const Register: React.FC = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
 
-  const handleLogin = async () => {
+  const handleRegister = async () => {
     try {
-      const response = await axios.post('https://vite-react-fr3n.onrender.com/login', {
+      await axios.post('https://vite-react-fr3n.onrender.com/register', {
         username,
         password
       });
-
-      localStorage.setItem('token', response.data.token);
       setError(null);
-      onLogin();
+      setSuccess('Registration successful. You can now log in.');
     } catch (err) {
-      setError('Login failed. Please check your credentials.');
+      setError('Registration failed. Please try again.');
     }
   };
 
   return (
     <div>
-      <h2>Login</h2>
+      <h2>Register</h2>
       <input
         type="text"
         value={username}
@@ -40,10 +35,11 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
         onChange={(e) => setPassword(e.target.value)}
         placeholder="Password"
       />
-      <button onClick={handleLogin}>Login</button>
+      <button onClick={handleRegister}>Register</button>
       {error && <p style={{ color: 'red' }}>{error}</p>}
+      {success && <p style={{ color: 'green' }}>{success}</p>}
     </div>
   );
 };
 
-export default Login;
+export default Register;
