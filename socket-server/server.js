@@ -42,23 +42,30 @@ app.post('/register', async (req, res) => {
   try {
     const { username, password } = req.body;
 
+    // Check if the body data is received correctly
+    if (!username || !password) {
+      return res.status(400).json({ error: 'Username and password are required' });
+    }
+
+    // Check if the username already exists
     const existingUser = users.find((u) => u.username === username);
     if (existingUser) {
       return res.status(400).json({ error: 'Username already taken' });
     }
 
+    // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    // Save the new user
     users.push({ username, password: hashedPassword });
 
-    console.log(`User registered: ${username}`);
-    res.status(201).send('User registered');
+    console.log(`User registered: ${username}`); // Log for debugging
+    res.status(201).json({ message: 'User registered successfully' });
   } catch (error) {
-    console.error('Registration error:', error);
-    res.status(500).json({ error: 'Registration failed. Please try again.' });
+    console.error('Registration error:', error); // Log the error
+    res.status(500).json({ error: 'Server error during registration. Please try again later.' });
   }
 });
-
 
 app.post('/login', async (req, res) => {
   const { username, password } = req.body;
