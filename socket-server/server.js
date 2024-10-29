@@ -182,18 +182,23 @@ io.on('connection', (socket) => {
 
   socket.on('delete-poll', (pollId) => {
     console.log(`Poll ID: ${pollId}, User ID: ${socket.user.userId}`);
+    console.log('Current Active Polls:', activePolls);
+  
     const pollIndex = activePolls.findIndex((p) => p.id === pollId && p.creator === socket.user.userId);
+    
+    console.log(`Found Poll Index: ${pollIndex}`);
   
     if (pollIndex === -1) {
       socket.emit('error', { message: 'Poll not found or unauthorized' });
       return;
     }
-  
+    
     activePolls.splice(pollIndex, 1);
     delete votes[pollId];
     io.emit('active-polls', activePolls);
     console.log(`Poll deleted: ${pollId}`);
   });
+  
   
   
 

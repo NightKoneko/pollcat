@@ -23,12 +23,24 @@ const DeletePolls: React.FC = () => {
     };
   }, []);
 
+  useEffect(() => {
+    socket.on('error', (error) => {
+      alert(error.message);
+    });
+  
+    return () => {
+      socket.off('error'); // Clean up on component unmount
+    };
+  }, []);
+  
+
   const handleDeletePoll = (pollId: number) => {
-    console.log(`Attempting to delete poll with ID: ${pollId}`);
     const confirmDelete = window.confirm('Are you sure you want to delete this poll?');
     if (confirmDelete) {
-      socket.emit('delete-poll', pollId);
-      socket.on('error', (error) => {
+      console.log(`Attempting to delete poll with ID: ${pollId}`);
+      socket.emit('delete-poll', pollId); // Emit delete event 
+    }
+    else { socket.on('error', (error) => {
         alert(error.message);
       });
     }
