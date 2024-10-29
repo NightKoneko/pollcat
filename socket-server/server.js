@@ -158,6 +158,18 @@ io.on('connection', (socket) => {
 
   socket.emit('active-polls', activePolls);
 
+  socket.on('create-poll', (pollData, callback) => {
+    const pollId = Date.now();
+    const newPoll = { id: pollId, question: pollData.question, options: pollData.options };
+    activePolls.push(newPoll);
+    votes[pollId] = Array(pollData.options.length).fill(0);
+  
+    io.emit('active-polls', activePolls);
+    console.log("Poll created:", newPoll);
+  
+    if (callback) callback({ status: 'success', poll: newPoll });
+  });  
+
   socket.on('vote', ({ pollId, optionIndex }) => {
     if (votes[pollId] && votes[pollId][optionIndex] !== undefined) {
       votes[pollId][optionIndex] += 1;

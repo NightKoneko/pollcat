@@ -66,3 +66,30 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+.app-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin: 20px;
+}
+
+.authenticated-view {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+}
+
+.left-column, .right-column {
+  flex: 1; /* allows columns to take equal space */
+  padding: 20px;
+  box-sizing: border-box; /* includes padding in width/height calculations */
+}
+
+.container {
+  margin-bottom: 20px;
+}
+
+h2 {
+  margin-top: 0; /* remove default top margin */
+}

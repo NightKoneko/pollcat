@@ -54,16 +54,18 @@ const PollVoting: React.FC = () => {
   const handleVote = (pollId: number) => {
     if (selectedOption !== null && !hasVoted[pollId]) {
       socket.emit('vote', { pollId, optionIndex: selectedOption });
-
+  
       const votedPolls = JSON.parse(localStorage.getItem('votedPolls') || '[]');
       votedPolls.push(pollId);
       localStorage.setItem('votedPolls', JSON.stringify(votedPolls));
-
+  
       setHasVoted({ ...hasVoted, [pollId]: true });
       setSelectedOption(null);
       setVoteError(null);
+    } else {
+      setVoteError("You have already voted or no option selected.");
     }
-  };
+  };  
 
   const togglePoll = (pollId: number) => {
     if (expandedPollId === pollId) {
