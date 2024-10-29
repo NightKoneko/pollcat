@@ -180,6 +180,21 @@ io.on('connection', (socket) => {
     }
   });
 
+  socket.on('delete-poll', (pollId) => {
+    const pollIndex = activePolls.findIndex((p) => p.id === pollId && p.creator === socket.user.userId);
+    
+    if (pollIndex === -1) {
+      socket.emit('error', { message: 'Poll not found or unauthorized' });
+      return;
+    }
+  
+    activePolls.splice(pollIndex, 1);
+    delete votes[pollId];
+    io.emit('active-polls', activePolls);
+    console.log(`Poll deleted: ${pollId}`);
+  });
+  
+
   socket.on('disconnect', () => {
     console.log('User disconnected');
   });
