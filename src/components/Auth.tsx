@@ -3,7 +3,7 @@ import { io } from 'socket.io-client';
 
 const token = localStorage.getItem('token');
 
-const socket = io('https://your-backend.onrender.com', {
+const socket = io('https://vite-react-fr3n.onrender.com/', {
   auth: {
     token
   }
