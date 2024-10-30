@@ -180,26 +180,22 @@ io.on('connection', (socket) => {
     }
   });
 
-  socket.on('delete-poll', (pollId) => {
-    console.log(`Deleting Poll. Poll ID: ${pollId}, User ID: ${socket.user.userId}`);
-    console.log('Current Active Polls:', activePolls);
+  socket.on('delete-poll', (pollId, callback) => {
+    const pollIndex = activePolls.findIndex(poll => poll.id === pollId);
+    
+    if (pollIndex !== -1) {
+      activePolls.splice(pollIndex, 1); // Remove the poll
+      delete votes[pollId]; // Optionally remove related votes
+      io.emit('active-polls', activePolls); // Emit updated poll list
+      console.log("Deleted poll with ID:", pollId); // Log deletion
   
-    const pollIndex = activePolls.findIndex((p) => p.id === pollId && p.creator === socket.user.userId);  
-  
-    if (pollIndex === -1) {
-      socket.emit('error', { message: 'Poll not found or unauthorized' });
-      return;
+      if (callback) callback({ status: 'success' });
+    } else {
+      console.error("Poll not found, unable to delete:", pollId);
+      if (callback) callback({ status: 'error', message: 'Poll not found' });
     }
-
-    activePolls.splice(pollIndex, 1);
-    delete votes[pollId];
-    io.emit('active-polls', activePolls);
-    console.log(`Poll deleted: ${pollId}`);
   });
   
-  
-  
-
   socket.on('disconnect', () => {
     console.log('User disconnected');
   });

@@ -14,18 +14,26 @@ const DeletePolls: React.FC = () => {
   const [polls, setPolls] = useState<Poll[]>([]);
 
   useEffect(() => {
-    socket.on('active-polls', (deletePolls: Poll[]) => {
-      setPolls(deletePolls);
+    socket.on('active-polls', (polls) => {
+      setPolls(polls);
     });
-
+  
     return () => {
-      socket.off('active-polls');
+      socket.off('active-polls'); // Clean up listener on unmount
     };
   }, []);
+  
 
   const handleDeletePoll = (pollId: number) => {
-    socket.emit('delete-poll', pollId);
-  };
+    console.log("Attempting to delete poll:", pollId); // Debug log
+    socket.emit('delete-poll', pollId, (response: { status: string }) => {
+      if (response.status === 'success') {
+        console.log("Poll deleted successfully");
+      } else {
+        console.error("Failed to delete poll");
+      }
+    });
+  };  
 
   return (
     <div className="container">
