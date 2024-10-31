@@ -1,3 +1,5 @@
+// This can probably be deleted tbh
+
 import React, { useEffect, useState } from 'react';
 import socket from '../socket.ts';
 
@@ -17,16 +19,16 @@ const PollResults: React.FC = () => {
     };
   }, []);
 
-  if (!results) return <div>Loading poll results...</div>;
+  if (!results) return <div></div>;
 
-  return (
-    <div>
-      <h3>Poll Results</h3>
-      {results.options.map((option, index) => (
-        <p key={index}>{option}: {results.votes[index]} votes</p>
-      ))}
-    </div>
-  );
+  // return (
+  //   <div>
+  //     <h3>Poll Results</h3>
+  //     {results.options.map((option, index) => (
+  //       <p key={index}>{option}: {results.votes[index]} votes</p>
+  //     ))}
+  //   </div>
+  // );
 };
 
 

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import axios from 'axios';
+const backendURL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000';
 
 const Register: React.FC = () => {
   const [username, setUsername] = useState('');
@@ -9,7 +10,7 @@ const Register: React.FC = () => {
 
   const handleRegister = async () => {
     try {
-      await axios.post('https://vite-react-fr3n.onrender.com/register', {
+      await axios.post(backendURL + '/register', {
         username,
         password
       });

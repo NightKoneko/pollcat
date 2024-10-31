@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import axios from 'axios';
 
+const backendURL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000';
+
 interface LoginProps {
   onLogin: () => void;
 }
@@ -12,7 +14,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
 
   const handleLogin = async () => {
     try {
-      const response = await axios.post('https://vite-react-fr3n.onrender.com/login', {
+      const response = await axios.post(backendURL + '/login', {
         username,
         password
       });
