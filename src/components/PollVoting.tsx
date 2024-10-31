@@ -74,6 +74,7 @@ const PollVoting: React.FC = () => {
       setExpandedPollId(pollId);
 
       socket.emit('toggle-poll', pollId);
+      socket.emit('request-poll-results', pollId);
     }
 
     setHasVoted({ ...hasVoted, [pollId]: checkIfVoted(pollId) });

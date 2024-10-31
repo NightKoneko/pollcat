@@ -180,6 +180,13 @@ io.on('connection', (socket) => {
     }
   });
 
+  socket.on('request-poll-results', (pollId) => {
+    const poll = activePolls.find((p) => p.id === pollId);
+    if (poll && votes[pollId]) {
+      socket.emit('poll-results', { pollId, options: poll.options, votes: votes[pollId] });
+    }
+  });  
+
   socket.on('delete-poll', (pollId, callback) => {
     const pollIndex = activePolls.findIndex(poll => poll.id === pollId);
     
