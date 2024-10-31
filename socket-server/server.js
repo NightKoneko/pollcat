@@ -204,3 +204,5 @@ io.on('connection', (socket) => {
 server.listen(3000, () => {
   console.log('Backend server is running on port 3000');
 });
+
+console.log("Backend URL:", import.meta.env.VITE_BACKEND_URL);
