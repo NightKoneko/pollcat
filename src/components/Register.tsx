@@ -10,7 +10,7 @@ const Register: React.FC = () => {
 
   const handleRegister = async () => {
     try {
-      await axios.post(backendURL + '/register', {
+      await axios.post(backendURL + 'register', {
         username,
         password
       });

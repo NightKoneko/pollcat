@@ -14,7 +14,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
 
   const handleLogin = async () => {
     try {
-      const response = await axios.post(backendURL + '/login', {
+      const response = await axios.post(backendURL + 'login', {
         username,
         password
       });
