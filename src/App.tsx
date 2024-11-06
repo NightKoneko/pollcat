@@ -29,7 +29,7 @@ const App: React.FC = () => {
 
   return (
     <div>
-      <h1 className="pollheader">Polls</h1>
+      <h1 className="pollheader">Pollcat</h1>
       <div className="app-container">
         {isAuthenticated ? (
           <div className="authenticated-view">
