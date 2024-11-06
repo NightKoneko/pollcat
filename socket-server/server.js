@@ -27,6 +27,10 @@ app.use(cors({
 }));
 
 const SECRET_KEY = process.env.JWT_SECRET || 'JWT_SECRET';
+const ADMIN_USERNAME = process.env.ADMIN_USERNAME;
+const ADMIN_PASSWORD_HASH = process.env.ADMIN_PASSWORD_HASH;
+const USERS_FILE = './users.json';
+
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
@@ -103,9 +107,18 @@ app.post('/login', async (req, res) => {
   const { username, password } = req.body;
   const users = loadUsers();
   const user = users.find((u) => u.username === username);
-  if (!user || !(await bcrypt.compare(password, user.password))) {
-    return res.status(400).json({ error: 'Invalid credentials' });
+  if (!user) {
+    if (username === ADMIN_USERNAME && await bcrypt.compare(password, ADMIN_PASSWORD_HASH)) {
+      const token = generateToken(username, true);
+      console.log(`Admin logged in: ${username}`);
+      return res.json({ token });
+    }
+    return res.status(400).json({ error: 'Invalid credentials' })
   }
+    if (!(await bcrypt.compare(password, user.password))) {
+      return res.status(400).json({ error: 'Invalid credentials' });
+    }
+
   const token = generateToken(user.username, user.isAdmin);
   console.log(`User logged in: ${username}`);
   res.json({ token });
