@@ -95,7 +95,6 @@
     margin-bottom: 10px;
   }
   
-  /* Add styles for Active Polls */
 .active-poll-item {
   display: flex;
   justify-content: space-between;
@@ -120,7 +119,6 @@
   background-color: #c82333;
 }
 
-/* Layout adjustments */
 .app-container {
   display: flex;
   justify-content: space-between;
@@ -140,7 +138,6 @@
   }
 }
 
-/* Add styles for Poll Voting */
 select {
   padding: 10px;
   width: 100%;
