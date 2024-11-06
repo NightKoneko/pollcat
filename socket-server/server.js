@@ -27,7 +27,6 @@ app.use(cors({
 }));
 
 const SECRET_KEY = process.env.JWT_SECRET || 'JWT_SECRET';
-const USERS_FILE = './users.json';
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
@@ -77,7 +76,7 @@ const generateToken = (userId, isAdmin) => {
 
 app.post('/register', async (req, res) => {
   try {
-    const { username, password, isAdmin = false } = req.body;
+    const { username, password, isAdmin=false } = req.body;
     if (!username || !password) {
       return res.status(400).json({ error: 'Username and password are required' });
     }
@@ -112,6 +111,26 @@ app.post('/login', async (req, res) => {
   res.json({ token });
 });
 
+app.get('/', (req, res) => {
+  res.send('Backend is running. This is the API server.');
+});
+
+app.get('/users', authenticateJWT, (req, res) => {
+  console.log('User list requested');
+  res.json(users.map(u => ({ username: u.username })));
+});
+
+app.delete('/users/:username', authenticateJWT, (req, res) => {
+  const { username } = req.params;
+  const userIndex = users.findIndex(u => u.username === username);
+  if (userIndex === -1) {
+    return res.status(404).json({ error: 'User not found' });
+  }
+  users.splice(userIndex, 1);
+  console.log(`User deleted: ${username}`);
+  res.status(200).json({ message: `User ${username} deleted successfully` });
+});
+
 app.post('/polls', authenticateJWT, (req, res) => {
   const { question, options } = req.body;
   const pollId = Date.now();
@@ -120,6 +139,21 @@ app.post('/polls', authenticateJWT, (req, res) => {
   votes[pollId] = Array(options.length).fill(0);
   io.emit('active-polls', activePolls);
   res.status(201).json({ message: 'Poll created', poll: newPoll });
+});
+
+app.post('/polls/:pollId/vote', authenticateJWT, (req, res) => {
+  const { pollId } = req.params;
+  const { optionIndex } = req.body;
+  const poll = activePolls.find((p) => p.id === parseInt(pollId));
+
+  if (!poll) return res.status(404).json({ error: 'Poll not found' });
+  if (!votes[pollId] || votes[pollId][optionIndex] === undefined) {
+    return res.status(400).json({ error: 'Invalid vote option' });
+  }
+
+  votes[pollId][optionIndex] += 1;
+  io.emit('poll-results', { pollId, options: poll.options, votes: votes[pollId] });
+  res.status(200).json({ message: 'Vote recorded' });
 });
 
 app.delete('/polls/:pollId', authenticateJWT, (req, res) => {
@@ -159,13 +193,46 @@ io.on('connection', (socket) => {
     const newPoll = { id: pollId, question: pollData.question, options: pollData.options };
     activePolls.push(newPoll);
     votes[pollId] = Array(pollData.options.length).fill(0);
-
+  
     io.emit('active-polls', activePolls);
     console.log("Poll created:", newPoll);
-
+  
     if (callback) callback({ status: 'success', poll: newPoll });
+  });  
+
+  socket.on('vote', ({ pollId, optionIndex }) => {
+    if (votes[pollId] && votes[pollId][optionIndex] !== undefined) {
+      votes[pollId][optionIndex] += 1;
+      const poll = activePolls.find((p) => p.id === parseInt(pollId));
+      io.emit('poll-results', { pollId, options: poll.options, votes: votes[pollId] });
+    } else {
+      socket.emit('vote-failed', 'Invalid poll or option');
+    }
   });
 
+  socket.on('request-poll-results', (pollId) => {
+    const poll = activePolls.find((p) => p.id === pollId);
+    if (poll && votes[pollId]) {
+      socket.emit('poll-results', { pollId, options: poll.options, votes: votes[pollId] });
+    }
+  });  
+
+  socket.on('delete-poll', (pollId, callback) => {
+    const pollIndex = activePolls.findIndex(poll => poll.id === pollId);
+    
+    if (pollIndex !== -1) {
+      activePolls.splice(pollIndex, 1);
+      delete votes[pollId];
+      io.emit('active-polls', activePolls);
+      console.log("Deleted poll with ID:", pollId);
+  
+      if (callback) callback({ status: 'success' });
+    } else {
+      console.error("Poll not found, unable to delete:", pollId);
+      if (callback) callback({ status: 'error', message: 'Poll not found' });
+    }
+  });
+  
   socket.on('disconnect', () => {
     console.log('User disconnected:', socket.user.userId);
   });
