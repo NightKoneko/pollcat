@@ -9,7 +9,7 @@ require('dotenv').config();
 const app = express();
 app.use(express.json());
 const allowedOrigins = [
-  'https://vite-react-topaz-rho.vercel.app',
+  'https://pollcat.vercel.app',
   'http://localhost:5173',
 ];
 
