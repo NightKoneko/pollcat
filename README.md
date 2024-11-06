@@ -12,6 +12,8 @@ $ npm run build
 $ node socket-server/server.js
 ```
 
+If you're hosting the server elsewhere, make sure to put the link to it in an environment variable for `VITE_BACKEND_URL`
+
 ### TO-DO:
 
 * Admin accounts (so not everybody and anybody can just delete any poll at their will)
