@@ -1,4 +1,4 @@
-# Polls
+# Pollcat
 
 Simple poll webapp (for now, more features coming soon... probably), live web preview here: [https://pollcat.vercel.app](https://pollcat.vercel.app)
 
