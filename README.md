@@ -11,3 +11,11 @@ $ npm run build
 ```shell
 $ node socket-server/server.js
 ```
+
+### TO-DO:
+
+* Admin accounts (so not everybody and anybody can just delete any poll at their will)
+* Database for Users and/or Polls
+* Logout button
+* Fixes for invalid/missing JWT
+* Better frontend (I hate CSS)
