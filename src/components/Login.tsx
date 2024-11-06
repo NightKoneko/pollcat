@@ -4,7 +4,7 @@ import axios from 'axios';
 const backendURL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000';
 
 interface LoginProps {
-  onLogin: () => void;
+  onLogin: (user: { username: string }) => void;
 }
 
 const Login: React.FC<LoginProps> = ({ onLogin }) => {
@@ -12,19 +12,17 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
 
-  const handleLogin = async () => {
+ const handleLogin = async () => {
     try {
       const response = await axios.post(backendURL + 'login', {
         username,
         password
       });
-      
 
       localStorage.setItem('token', response.data.token);
       setError(null);
-      onLogin();
-      window.location.reload();
-    } catch (err) { 
+      onLogin({ username });
+    } catch (err) {
       setError('Login failed. Please check your credentials.');
     }
   };

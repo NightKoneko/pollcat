@@ -89,6 +89,10 @@ app.post('/login', async (req, res) => {
   res.json({ token });
 });
 
+app.get('/', (req, res) => {
+  res.send('Backend is running. This is the API server.');
+});
+
 app.get('/users', authenticateJWT, (req, res) => {
   console.log('User list requested');
   res.json(users.map(u => ({ username: u.username })));

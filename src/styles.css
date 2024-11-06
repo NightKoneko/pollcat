@@ -1,100 +1,92 @@
 * {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    font-family: 'Arial', sans-serif;
-  }
-  
-  body {
-    background-color: #f7f7f7;
-    color: #333;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    padding: 20px;
-  }
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Arial', sans-serif;
+}
 
-  .pollheader {
-    padding-top: 40px;
-    margin-top: 40px;
-    margin-bottom: -15px;
-  }
-  
-  h1, h2 {
-    text-align: center;
-    color: #333;
-  }
-  
-  .container {
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    padding: 20px;
-    max-width: 600px;
-    width: 100%;
-    margin-top: 10px;
-  }
-  
-  button {
-    background-color: #6552e0;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-top: 10px;
-    margin-left: 5px;
-  }
-  
-  button:hover {
-    background-color: #987ed6;
-  }
-  
-  input[type="text"] {
-    width: calc(100% - 20px);
-    padding: 10px;
-    margin: 10px 0;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-  }
+body {
+  background-color: #f7f7f7;
+  color: #333;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  padding: 20px;
+}
 
-  input[type="password"] {
-    width: calc(100% - 20px);
-    padding: 10px;
-    margin: 10px 0;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-  }
-  
-  ul {
-    list-style: none;
-    padding: 0;
-  }
-  
-  li {
-    margin: 10px 0;
-  }
-  
-  label {
-    font-size: 16px;
-  }
-  
-  input[type="radio"] {
-    margin-right: 10px;
-  }
-  
-  .results {
-    background-color: #f1f1f1;
-    padding: 15px;
-    border-radius: 5px;
-    margin-top: 15px;
-  }
-  
-  .result-item {
-    margin-bottom: 10px;
-  }
-  
+.pollheader {
+  padding-top: 40px;
+  margin-top: 40px;
+  margin-bottom: -15px;
+}
+
+h1, h2 {
+  text-align: center;
+  color: #333;
+}
+
+.container {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  max-width: 600px;
+  width: 100%;
+  margin-top: 10px;
+}
+
+button {
+  background-color: #6552e0;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 10px;
+  margin-left: 5px;
+}
+
+button:hover {
+  background-color: #987ed6;
+}
+
+input[type="text"], input[type="password"] {
+  width: calc(100% - 20px);
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+}
+
+li {
+  margin: 10px 0;
+}
+
+label {
+  font-size: 16px;
+}
+
+input[type="radio"] {
+  margin-right: 10px;
+}
+
+.results {
+  background-color: #f1f1f1;
+  padding: 15px;
+  border-radius: 5px;
+  margin-top: 15px;
+}
+
+.result-item {
+  margin-bottom: 10px;
+}
+
 .active-poll-item {
   display: flex;
   justify-content: space-between;
@@ -146,4 +138,38 @@ select {
 
 p {
   margin: 10px 0;
+}
+
+.user-info {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  display: flex;
+  align-items: center; /* Center-aligns both the text and the button */
+  gap: 10px;
+  padding: 10px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+.logout-button {
+  padding: 8px 16px;
+  background-color: #f05454;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 0px;
+}
+
+.logout-button:hover {
+  background-color: #d43f3f;
+}
+
+.user-info-text {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  color: #333;
 }

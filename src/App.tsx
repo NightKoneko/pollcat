@@ -5,14 +5,27 @@ import PollResults from './components/PollResults';
 import DeletePolls from './components/DeletePolls';
 import Login from './components/Login';
 import Register from './components/Register';
+//import axiosmeow from './components/AxiosMeow';
 
 const App: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [username, setUsername] = useState<string | null>(null);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-    setIsAuthenticated(!!token);
+    const storedUsername = localStorage.getItem('username');
+    if (token && storedUsername) {
+      setIsAuthenticated(true);
+      setUsername(storedUsername);
+    }
   }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('username');
+    setIsAuthenticated(false);
+    setUsername(null);
+  };
 
   return (
     <div>
@@ -20,6 +33,10 @@ const App: React.FC = () => {
       <div className="app-container">
         {isAuthenticated ? (
           <div className="authenticated-view">
+            <div className="user-info">
+              <p>Logged in as: {username}</p>
+              <button className="logout-button" onClick={handleLogout}>Logout</button>
+            </div>
             <div className="left-column">
               <PollCreation />
               <DeletePolls />
@@ -31,7 +48,11 @@ const App: React.FC = () => {
           </div>
         ) : (
           <div className="auth-view">
-            <Login onLogin={() => setIsAuthenticated(true)} />
+            <Login onLogin={(user) => {
+              setIsAuthenticated(true);
+              setUsername(user.username);
+              localStorage.setItem('username', user.username);
+            }} />
             <Register />
           </div>
         )}
