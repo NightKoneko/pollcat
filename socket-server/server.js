@@ -4,7 +4,6 @@ const { Server } = require('socket.io');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const cors = require('cors');
-const fs = require('fs');
 require('dotenv').config();
 
 const app = express();
@@ -27,10 +26,6 @@ app.use(cors({
 }));
 
 const SECRET_KEY = process.env.JWT_SECRET || 'JWT_SECRET';
-const ADMIN_USERNAME = process.env.ADMIN_USERNAME;
-const ADMIN_PASSWORD_HASH = process.env.ADMIN_PASSWORD_HASH;
-const USERS_FILE = './users.json';
-
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
@@ -39,24 +34,6 @@ const io = new Server(server, {
     credentials: true,
   },
 });
-
-const loadUsers = () => {
-  try {
-    const data = fs.readFileSync(USERS_FILE, 'utf8');
-    return JSON.parse(data);
-  } catch (error) {
-    console.error('Error reading users file:', error);
-    return [];
-  }
-};
-
-const saveUsers = (users) => {
-  try {
-    fs.writeFileSync(USERS_FILE, JSON.stringify(users, null, 2), 'utf8');
-  } catch (error) {
-    console.error('Error writing to users file:', error);
-  }
-};
 
 const authenticateJWT = (req, res, next) => {
   const token = req.headers.authorization?.split(' ')[1];
@@ -71,30 +48,28 @@ const authenticateJWT = (req, res, next) => {
   }
 };
 
+const users = [];
 let activePolls = [];
 let votes = {};
 
-const generateToken = (userId, isAdmin) => {
-  return jwt.sign({ userId, isAdmin }, SECRET_KEY, { expiresIn: '1h' });
+const generateToken = (userId) => {
+  return jwt.sign({ userId }, SECRET_KEY, { expiresIn: '1h' });
 };
 
 app.post('/register', async (req, res) => {
   try {
-    const { username, password, isAdmin=false } = req.body;
+    const { username, password } = req.body;
     if (!username || !password) {
       return res.status(400).json({ error: 'Username and password are required' });
     }
 
-    const users = loadUsers();
     const existingUser = users.find((u) => u.username === username);
     if (existingUser) {
       return res.status(400).json({ error: 'Username already taken' });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = { username, password: hashedPassword, isAdmin };
-    users.push(newUser);
-    saveUsers(users);
+    users.push({ username, password: hashedPassword });
     console.log(`User registered: ${username}`);
     res.status(201).json({ message: 'User registered successfully' });
   } catch (error) {
@@ -105,21 +80,11 @@ app.post('/register', async (req, res) => {
 
 app.post('/login', async (req, res) => {
   const { username, password } = req.body;
-  const users = loadUsers();
   const user = users.find((u) => u.username === username);
-  if (!user) {
-    if (username === ADMIN_USERNAME && await bcrypt.compare(password, ADMIN_PASSWORD_HASH)) {
-      const token = generateToken(username, true);
-      console.log(`Admin logged in: ${username}`);
-      return res.json({ token });
-    }
-    return res.status(400).json({ error: 'Invalid credentials' })
+  if (!user || !(await bcrypt.compare(password, user.password))) {
+    return res.status(400).json({ error: 'Invalid credentials' });
   }
-    if (!(await bcrypt.compare(password, user.password))) {
-      return res.status(400).json({ error: 'Invalid credentials' });
-    }
-
-  const token = generateToken(user.username, user.isAdmin);
+  const token = generateToken(user.username);
   console.log(`User logged in: ${username}`);
   res.json({ token });
 });
@@ -170,14 +135,10 @@ app.post('/polls/:pollId/vote', authenticateJWT, (req, res) => {
 });
 
 app.delete('/polls/:pollId', authenticateJWT, (req, res) => {
-  if (!req.user.isAdmin) {
-    return res.status(403).json({ error: 'Only admins can delete polls' });
-  }
-
   const { pollId } = req.params;
-  const pollIndex = activePolls.findIndex((p) => p.id === parseInt(pollId));
+  const pollIndex = activePolls.findIndex((p) => p.id === parseInt(pollId) && p.creator === req.user.userId);
 
-  if (pollIndex === -1) return res.status(404).json({ error: 'Poll not found' });
+  if (pollIndex === -1) return res.status(404).json({ error: 'Poll not found or unauthorized' });
 
   activePolls.splice(pollIndex, 1);
   delete votes[pollId];
