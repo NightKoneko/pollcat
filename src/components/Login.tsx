@@ -24,7 +24,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
       setError(null);
       onLogin();
       window.location.reload();
-    } catch (err) {
+    } catch (err) { 
       setError('Login failed. Please check your credentials.');
     }
   };
