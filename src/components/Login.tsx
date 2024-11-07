@@ -22,6 +22,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
       localStorage.setItem('token', response.data.token);
       setError(null);
       onLogin({ username });
+      window.location.reload();
     } catch (err) {
       setError('Login failed. Please check your credentials.');
     }
