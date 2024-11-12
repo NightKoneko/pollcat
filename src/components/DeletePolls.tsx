@@ -1,6 +1,3 @@
-// this needs to be fixed, deleting polls crashes the server
-// ^^ I think above is fixed but I'm leaving it here for now
-
 import React, { useEffect, useState } from 'react';
 import socket from '../socket.ts';
 
@@ -10,31 +7,43 @@ interface Poll {
   options: string[];
 }
 
+interface ErrorMessage {
+  [key: number]: string | null;
+}
+
 const DeletePolls: React.FC = () => {
   const [polls, setPolls] = useState<Poll[]>([]);
+  const [errorMessages, setErrorMessages] = useState<ErrorMessage>({});
 
   useEffect(() => {
     socket.on('active-polls', (polls) => {
       setPolls(polls);
     });
-  
+
     return () => {
-      socket.off('active-polls'); // Clean up listener on unmount
+      socket.off('active-polls');
     };
   }, []);
-  
 
   const handleDeletePoll = (pollId: number) => {
     console.log("Attempting to delete poll:", pollId);
     socket.emit('delete-poll', pollId, (response: { status: string, message?: string }) => {
-        if (response.status === 'success') {
-            console.log("Poll deleted successfully");
-        } else {
-            console.error(response.message || "Failed to delete poll");
-            alert(response.message || "Only admins can delete polls.");
-        }
+      if (response.status === 'success') {
+        console.log("Poll deleted successfully");
+
+        setErrorMessages((prev) => ({ ...prev, [pollId]: null }));
+
+        setPolls((prevPolls) => prevPolls.filter((poll) => poll.id !== pollId));
+      } else {
+        console.error(response.message || "Failed to delete poll");
+
+        setErrorMessages((prev) => ({
+          ...prev,
+          [pollId]: response.message || "Only admins can delete polls.",
+        }));
+      }
     });
-};
+  };
 
   return (
     <div className="container">
@@ -47,6 +56,9 @@ const DeletePolls: React.FC = () => {
               <button onClick={() => handleDeletePoll(poll.id)} className="delete-button">
                 Delete Poll
               </button>
+              {errorMessages[poll.id] && (
+                <p style={{ color: 'red', marginTop: '4px' }}>{errorMessages[poll.id]}</p>
+              )}
             </li>
           ))}
         </ul>
