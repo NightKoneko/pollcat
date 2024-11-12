@@ -1,10 +1,11 @@
 const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
+const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const cors = require('cors');
-require('dotenv').config();
+require('dotenv').config({ path: './process.env' });
 
 const app = express();
 app.use(express.json());
@@ -12,6 +13,7 @@ const allowedOrigins = [
   'https://pollcat.vercel.app',
   'http://localhost:5173',
 ];
+const uri = process.env.MONGO_URI;
 
 app.use(cors({
   origin: function (origin, callback) {
@@ -25,7 +27,7 @@ app.use(cors({
   credentials: true,
 }));
 
-const SECRET_KEY = process.env.JWT_SECRET || 'JWT_SECRET';
+const SECRET_KEY = process.env.SECRET_KEY || 'SECRET_KEY';
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
@@ -34,6 +36,17 @@ const io = new Server(server, {
     credentials: true,
   },
 });
+
+mongoose.connect(uri, { useNewUrlParser: true })
+    .then(() => console.log("MongoDB connected"))
+    .catch(err => console.log("MongoDB connection error:", err));
+
+const userSchema = new mongoose.Schema({
+  username: String,
+  password: String,
+  isAdmin: { type: Boolean, default: false }
+});
+const User = mongoose.model('User', userSchema);
 
 const authenticateJWT = (req, res, next) => {
   const token = req.headers.authorization?.split(' ')[1];
@@ -54,23 +67,24 @@ let votes = {};
 
 const generateToken = (userId) => {
   return jwt.sign({ userId }, SECRET_KEY, { expiresIn: '1h' });
-};
+}; 
 
 app.post('/register', async (req, res) => {
   try {
-    const { username, password } = req.body;
+    const { username, password, isAdmin } = req.body;
     if (!username || !password) {
       return res.status(400).json({ error: 'Username and password are required' });
     }
 
-    const existingUser = users.find((u) => u.username === username);
+    const existingUser = await User.findOne({ username });
     if (existingUser) {
       return res.status(400).json({ error: 'Username already taken' });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    users.push({ username, password: hashedPassword });
-    console.log(`User registered: ${username}`);
+    const user = new User({ username, password: hashedPassword, isAdmin: !!isAdmin });
+    await user.save();
+
     res.status(201).json({ message: 'User registered successfully' });
   } catch (error) {
     console.error('Registration error:', error);
@@ -80,13 +94,13 @@ app.post('/register', async (req, res) => {
 
 app.post('/login', async (req, res) => {
   const { username, password } = req.body;
-  const user = users.find((u) => u.username === username);
+  const user = await User.findOne({ username });
   if (!user || !(await bcrypt.compare(password, user.password))) {
     return res.status(400).json({ error: 'Invalid credentials' });
   }
-  const token = generateToken(user.username);
-  console.log(`User logged in: ${username}`);
+  const token = jwt.sign({ userId: user._id, isAdmin: user.isAdmin }, SECRET_KEY, { expiresIn: '1h' });
   res.json({ token });
+  console.log(`User logged in: ${username}`);
 });
 
 app.get('/', (req, res) => {
@@ -134,11 +148,12 @@ app.post('/polls/:pollId/vote', authenticateJWT, (req, res) => {
   res.status(200).json({ message: 'Vote recorded' });
 });
 
-app.delete('/polls/:pollId', authenticateJWT, (req, res) => {
-  const { pollId } = req.params;
-  const pollIndex = activePolls.findIndex((p) => p.id === parseInt(pollId) && p.creator === req.user.userId);
+app.delete('/polls/:pollId', authenticateJWT, async (req, res) => {
+  if (!req.user.isAdmin) return res.status(403).json({ error: 'Only admins can delete polls' });
 
-  if (pollIndex === -1) return res.status(404).json({ error: 'Poll not found or unauthorized' });
+  const { pollId } = req.params;
+  const pollIndex = activePolls.findIndex((p) => p.id === parseInt(pollId));
+  if (pollIndex === -1) return res.status(404).json({ error: 'Poll not found' });
 
   activePolls.splice(pollIndex, 1);
   delete votes[pollId];
