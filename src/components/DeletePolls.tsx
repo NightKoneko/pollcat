@@ -25,15 +25,16 @@ const DeletePolls: React.FC = () => {
   
 
   const handleDeletePoll = (pollId: number) => {
-    console.log("Attempting to delete poll:", pollId); // Debug log
-    socket.emit('delete-poll', pollId, (response: { status: string }) => {
-      if (response.status === 'success') {
-        console.log("Poll deleted successfully");
-      } else {
-        console.error("Failed to delete poll");
-      }
+    console.log("Attempting to delete poll:", pollId);
+    socket.emit('delete-poll', pollId, (response: { status: string, message?: string }) => {
+        if (response.status === 'success') {
+            console.log("Poll deleted successfully");
+        } else {
+            console.error(response.message || "Failed to delete poll");
+            alert(response.message || "Only admins can delete polls.");
+        }
     });
-  };  
+};
 
   return (
     <div className="container">

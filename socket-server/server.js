@@ -207,24 +207,24 @@ io.on('connection', (socket) => {
   });  
 
   socket.on('delete-poll', (pollId, callback) => {
-    const pollIndex = activePolls.findIndex(poll => poll.id === pollId);
-    
-    if (pollIndex !== -1) {
-      activePolls.splice(pollIndex, 1);
-      delete votes[pollId];
-      io.emit('active-polls', activePolls);
-      console.log("Deleted poll with ID:", pollId);
-  
-      if (callback) callback({ status: 'success' });
-    } else {
-      console.error("Poll not found, unable to delete:", pollId);
-      if (callback) callback({ status: 'error', message: 'Poll not found' });
+    if (!socket.user.isAdmin) {
+        console.error("Unauthorized attempt to delete poll by non-admin user");
+        if (callback) callback({ status: 'error', message: 'Only admins can delete polls' });
+        return;
     }
-  });
-  
-  socket.on('disconnect', () => {
-    console.log('User disconnected:', socket.user.userId);
-  });
+    const pollIndex = activePolls.findIndex(poll => poll.id === pollId);
+    if (pollIndex !== -1) {
+        activePolls.splice(pollIndex, 1);
+        delete votes[pollId];
+        io.emit('active-polls', activePolls);
+        console.log("Poll deleted by admin:", pollId);
+        if (callback) callback({ status: 'success' });
+    } else {
+        console.error("Poll not found, unable to delete:", pollId);
+        if (callback) callback({ status: 'error', message: 'Poll not found' });
+    }
+});
+
 });
 
 server.listen(3000, () => {
