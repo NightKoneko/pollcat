@@ -56,6 +56,7 @@ const DeletePolls: React.FC = () => {
               <button onClick={() => handleDeletePoll(poll.id)} className="delete-button">
                 Delete Poll
               </button>
+              <p> </p>
               {errorMessages[poll.id] && (
                 <p style={{ color: 'red', marginTop: '4px' }}>{errorMessages[poll.id]}</p>
               )}
