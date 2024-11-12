@@ -21,3 +21,5 @@ If you're hosting the server elsewhere, make sure to put the link to it in an en
 * ~~Logout button~~
 * ~~Fixes for invalid/missing JWT~~
 * Better frontend (I hate CSS)
+* Realtime Graphs
+* Battle game mode (kind of like Jackbox's "Bracketeering" game) (This probably won't happen)
