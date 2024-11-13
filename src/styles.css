@@ -96,7 +96,6 @@ input[type="radio"] {
   border: 1px solid #ddd;
   border-radius: 5px;
   margin-bottom: 10px;
-  position: relative;
 }
 
 .delete-button {
@@ -173,24 +172,4 @@ p {
   align-items: center;
   font-size: 14px;
   color: #333;
-}
-
-.delete-container {
-  display: flex;
-  align-items: center;
-  gap: 10px; /* Space between button and error message if needed */
-}
-
-.delete-button {
-  margin-top: 10px;
-}
-
-.error-message {
-  color: red;
-  font-size: 0.9em;
-  position: relative;
-  margin-top: 15px;
-  left: 0; /* Align with left side of `.active-poll-item` */
-  width: 100%; /* Ensures the message stays within the box width */
-  text-align: left; /* Aligns text to the left */
 }
