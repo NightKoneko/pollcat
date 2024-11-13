@@ -16,7 +16,7 @@ If you're hosting the server elsewhere, make sure to put the link to it in an en
 
 ### TO-DO:
 
-* Admin accounts (so not everybody and anybody can just delete any poll at their will)
+* ~~Admin accounts (so not everybody and anybody can just delete any poll at their will)~~
 * ~~Database for Users and/or Polls~~
 * ~~Logout button~~
 * ~~Fixes for invalid/missing JWT~~
