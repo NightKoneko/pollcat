@@ -204,7 +204,13 @@ io.on('connection', (socket) => {
     if (poll && votes[pollId]) {
       socket.emit('poll-results', { pollId, options: poll.options, votes: votes[pollId] });
     }
-  });  
+  });
+  
+  socket.on('vote-cast', (pollId, selectedOption) => {
+    const updatedResults = getPollResults(pollId);
+    io.emit(`poll-results-${pollId}`, updatedResults);
+  });
+
 
   socket.on('delete-poll', (pollId, callback) => {
     if (!socket.user.isAdmin) {

@@ -10,9 +10,12 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@mantine/core": "^7.14.0",
+    "@mantine/hooks": "^7.14.0",
     "axios": "^1.7.7",
     "bcrypt": "^5.1.1",
     "bcryptjs": "^2.4.3",
+    "chart.js": "^4.4.6",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.21.1",
@@ -22,6 +25,7 @@
     "mongoose": "^8.8.1",
     "npm": "^10.9.0",
     "react": "^18.3.1",
+    "react-chartjs-2": "^5.2.0",
     "react-dom": "^18.3.1",
     "save-dev": "^0.0.1-security",
     "socket.io-client": "^4.8.0"
