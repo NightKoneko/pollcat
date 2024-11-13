@@ -97,6 +97,7 @@ input[type="radio"] {
   border-radius: 5px;
   margin-bottom: 10px;
   position: relative;
+  flex-direction: column;
 }
 
 .delete-button {
@@ -189,7 +190,7 @@ p {
   color: red;
   font-size: 0.9em;
   position: absolute;
-  bottom: -20px; /* Adjust to position it below the container */
+  margin-top: 5px;
   left: 0; /* Align with left side of `.active-poll-item` */
   width: 100%; /* Ensures the message stays within the box width */
   text-align: left; /* Aligns text to the left */
