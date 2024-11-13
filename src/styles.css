@@ -188,8 +188,8 @@ p {
 .error-message {
   color: red;
   font-size: 0.9em;
-  position: absolute;
-  margin-top: 5px;
+  position: relative;
+  margin-top: 15px;
   left: 0; /* Align with left side of `.active-poll-item` */
   width: 100%; /* Ensures the message stays within the box width */
   text-align: left; /* Aligns text to the left */
