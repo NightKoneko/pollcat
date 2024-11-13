@@ -53,13 +53,13 @@ const DeletePolls: React.FC = () => {
           {polls.map((poll) => (
             <li key={poll.id} className="active-poll-item">
               <strong>{poll.question}</strong>
-              <button onClick={() => handleDeletePoll(poll.id)} className="delete-button">
-                Delete Poll
-              </button>
-              <div>
-              {errorMessages[poll.id] && (
-                <p style={{ color: 'red', marginTop: '4px' }}>{errorMessages[poll.id]}</p>
-              )}
+              <div className="delete-container">
+                <button onClick={() => handleDeletePoll(poll.id)} className="delete-button">
+                  Delete Poll
+                </button>
+                {errorMessages[poll.id] && (
+                  <p className="error-message">{errorMessages[poll.id]}</p>
+                )}
               </div>
             </li>
           ))}

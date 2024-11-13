@@ -173,3 +173,17 @@ p {
   font-size: 14px;
   color: #333;
 }
+
+.delete-container {
+  margin-top: 5px;
+}
+
+.delete-button {
+  margin-top: 10px;
+}
+
+.error-message {
+  color: red;
+  margin-top: 4px;
+  font-size: 0.9em;
+}
