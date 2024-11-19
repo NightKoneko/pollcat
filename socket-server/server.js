@@ -211,6 +211,15 @@ io.on('connection', (socket) => {
     io.emit(`poll-results-${pollId}`, updatedResults);
   });
 
+  socket.on('get-poll', (pollId, callback) => {
+    const poll = activePolls.find((p) => p.id === pollId);
+    if (poll) {
+      callback(poll);
+    } else {
+      callback(null);
+    }
+  });
+  
 
   socket.on('delete-poll', (pollId, callback) => {
     if (!socket.user.isAdmin) {

@@ -173,3 +173,21 @@ p {
   font-size: 14px;
   color: #333;
 }
+
+.error-message {
+  color: red;
+}
+
+img {
+  width: 30em;
+  text-align: center;
+  align-items: center;
+  margin: auto;
+}
+
+.pollcatlogo {
+  padding-top: 40px;
+  margin-top: 40px;
+  margin-bottom: -15px;
+  
+}

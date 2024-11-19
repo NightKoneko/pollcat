@@ -1,3 +1,6 @@
+//I'll redo this later
+
+/**
 import React, { useEffect, useState } from 'react';
 import { Pie } from 'react-chartjs-2';
 import socket from '../socket.ts';
@@ -39,3 +42,4 @@ const PollResultsChart: React.FC<{ pollId: number }> = ({ pollId }) => {
 };
 
 export default PollResultsChart;
+*/
