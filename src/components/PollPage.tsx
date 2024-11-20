@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import socket from '../socket.ts';
+import PollVoting from './PollVoting';
 
 interface Poll {
   id: number;
@@ -28,12 +29,18 @@ const PollPage: React.FC = () => {
 
   return (
     <div>
-      <h2>{poll.question}</h2>
-      <ul>
-        {poll.options.map((option, index) => (
-          <li key={index}>{option}</li>
-        ))}
-      </ul>
+      <header>
+        <Link to="/">Home</Link>
+        <button
+          onClick={() => {
+            localStorage.removeItem('token');
+            window.location.href = '/';
+          }}
+        >
+          Logout
+        </button>
+      </header>
+      <PollVoting/>
     </div>
   );
 };

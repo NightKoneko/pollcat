@@ -88,7 +88,6 @@ const PollVoting: React.FC = () => {
         <ul className="poll-list">
           {polls.map((poll) => (
             <li key={poll.id} className="poll-item">
-              <Link to={`/poll/${poll.id}`}>{poll.question}</Link>
               <div className="poll-title" onClick={() => togglePoll(poll.id)}>
                 <h3>{poll.question}</h3>
                 <button className="toggle-button">
@@ -151,4 +150,5 @@ const PollVoting: React.FC = () => {
   );
 };
 
+//<Link to={`/poll/${poll.id}`}>{poll.question}</Link>
 export default PollVoting;
