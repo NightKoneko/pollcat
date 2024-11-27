@@ -7,9 +7,8 @@ import DeletePolls from './components/DeletePolls';
 import Login from './components/Login';
 import Register from './components/Register';
 import PollPage from './components/PollPage';
-//import axiosmeow from './components/AxiosMeow';
 
-const App: React.FC = () => {
+const useAuth = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [username, setUsername] = useState<string | null>(null);
 
@@ -22,59 +21,66 @@ const App: React.FC = () => {
     }
   }, []);
 
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('username');
+  const login = (user: { username: string }) => {
+    setIsAuthenticated(true);
+    setUsername(user.username);
+    localStorage.setItem('username', user.username);
+  };
+
+  const logout = () => {
     setIsAuthenticated(false);
     setUsername(null);
+    localStorage.removeItem('token');
+    localStorage.removeItem('username');
   };
+
+  return { isAuthenticated, username, login, logout };
+};
+
+const AuthenticatedLayout: React.FC<{ onLogout: () => void; username: string }> = ({ onLogout, username }) => (
+  <div className="app-container">
+    <div className="user-info">
+      <p>Logged in as: {username}</p>
+      <button className="logout-button" onClick={onLogout}>
+        Logout
+      </button>
+    </div>
+    <div className="left-column">
+      <PollCreation />
+      <DeletePolls />
+    </div>
+    <div className="right-column">
+      <PollVoting />
+      <PollResults />
+    </div>
+  </div>
+);
+
+const UnauthenticatedLayout: React.FC<{ onLogin: (user: { username: string }) => void }> = ({ onLogin }) => (
+  <div className="auth-view">
+    <Login onLogin={onLogin} />
+    <Register />
+  </div>
+);
+
+const App: React.FC = () => {
+  const { isAuthenticated, username, login, logout } = useAuth();
 
   return (
     <Router>
-      <img className="pollcatlogo" src="\pollcatlogo.png"/>
+      <img className="pollcatlogo" src="/pollcatlogo.png" alt="PollCat Logo" />
       <div>
         <Routes>
           {isAuthenticated ? (
             <>
               <Route
                 path="/"
-                element={
-                  <div className="app-container">
-                    <div className="user-info">
-                      <p>Logged in as: {username}</p>
-                      <button className="logout-button" onClick={handleLogout}>
-                        Logout
-                      </button>
-                    </div>
-                    <div className="left-column">
-                      <PollCreation />
-                      <DeletePolls />
-                    </div>
-                    <div className="right-column">
-                      <PollVoting />
-                      <PollResults />
-                    </div>
-                  </div>
-                }
+                element={<AuthenticatedLayout onLogout={logout} username={username!} />}
               />
               <Route path="/poll/:pollId" element={<PollPage />} />
             </>
           ) : (
-            <Route
-              path="/"
-              element={
-                <div className="auth-view">
-                  <Login
-                    onLogin={(user) => {
-                      setIsAuthenticated(true);
-                      setUsername(user.username);
-                      localStorage.setItem('username', user.username);
-                    }}
-                  />
-                  <Register />
-                </div>
-              }
-            />
+            <Route path="/" element={<UnauthenticatedLayout onLogin={login} />} />
           )}
         </Routes>
       </div>
