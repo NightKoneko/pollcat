@@ -103,6 +103,31 @@ app.post('/login', async (req, res) => {
   console.log(`User logged in: ${username}`);
 });
 
+app.post('/polls', authenticateJWT, (req, res) => {
+  const { question, options } = req.body;
+  const pollId = Date.now();
+  const newPoll = { id: pollId, question, options, creator: req.user.userId };
+  activePolls.push(newPoll);
+  votes[pollId] = Array(options.length).fill(0);
+  
+  const pollLink = `https://pollcat.vercel.app/poll/${pollId}` || `http://localhost:5173/poll/${pollId}`;
+  
+  io.emit('active-polls', activePolls);
+  res.status(201).json({ message: 'Poll created', poll: newPoll, link: pollLink });
+});
+
+app.get('/polls/:pollId', (req, res) => {
+  const { pollId } = req.params;
+  const poll = activePolls.find(p => p.id === parseInt(pollId));
+
+  if (!poll) {
+    return res.status(404).json({ error: 'Poll not found' });
+  }
+
+  res.status(200).json(poll);
+});
+
+
 app.get('/', (req, res) => {
   res.send('Backend is running. This is the API server.');
 });
@@ -184,10 +209,13 @@ io.on('connection', (socket) => {
     votes[pollId] = Array(pollData.options.length).fill(0);
   
     io.emit('active-polls', activePolls);
+
+    const pollLink = `https://pollcat.vercel.app/poll/${pollId}` || `http://localhost:5173/poll/${pollId}`;
     console.log("Poll created:", newPoll);
   
-    if (callback) callback({ status: 'success', poll: newPoll });
-  });  
+    if (callback) callback({ status: 'success', poll: newPoll, link: pollLink });
+});
+
 
   socket.on('vote', ({ pollId, optionIndex }) => {
     if (votes[pollId] && votes[pollId][optionIndex] !== undefined) {

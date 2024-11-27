@@ -68,7 +68,7 @@ const App: React.FC = () => {
 
   return (
     <Router>
-      <img className="pollcatlogo" src="/pollcatlogo.png" alt="PollCat Logo" />
+      <img className="pollcatlogo" src="/pollcatlogo.png" alt="Pollcat Logo" />
       <div>
         <Routes>
           {isAuthenticated ? (

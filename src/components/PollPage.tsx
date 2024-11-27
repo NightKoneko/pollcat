@@ -14,14 +14,12 @@ const PollPage: React.FC = () => {
   const [poll, setPoll] = useState<Poll | null>(null);
 
   useEffect(() => {
-    socket.emit('get-poll', parseInt(pollId!, 10), (fetchedPoll: Poll) => {
-      setPoll(fetchedPoll);
-    });
-
-    return () => {
-      socket.off('get-poll');
-    };
+    fetch(`https://pollcat.vercel.app/polls/${pollId}` || `http://localhost:5173/poll/${pollId}`)
+      .then(response => response.json())
+      .then(data => setPoll(data))
+      .catch(() => setPoll(null));
   }, [pollId]);
+  
 
   if (!poll) {
     return <p>Loading poll...</p>;
