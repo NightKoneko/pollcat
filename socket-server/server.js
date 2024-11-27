@@ -110,7 +110,7 @@ app.post('/polls', authenticateJWT, (req, res) => {
   activePolls.push(newPoll);
   votes[pollId] = Array(options.length).fill(0);
   
-  const pollLink = `https://pollcat.vercel.app/poll/${pollId}` || `http://localhost:5173/poll/${pollId}`;
+  const pollLink = `https://pollcat.vercel.app/poll/${pollId}`;
   
   io.emit('active-polls', activePolls);
   res.status(201).json({ message: 'Poll created', poll: newPoll, link: pollLink });
@@ -210,7 +210,7 @@ io.on('connection', (socket) => {
   
     io.emit('active-polls', activePolls);
 
-    const pollLink = `https://pollcat.vercel.app/poll/${pollId}` || `http://localhost:5173/poll/${pollId}`;
+    const pollLink = `https://pollcat.vercel.app/poll/${pollId}`;
     console.log("Poll created:", newPoll);
   
     if (callback) callback({ status: 'success', poll: newPoll, link: pollLink });

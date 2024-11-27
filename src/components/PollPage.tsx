@@ -14,7 +14,7 @@ const PollPage: React.FC = () => {
   const [poll, setPoll] = useState<Poll | null>(null);
 
   useEffect(() => {
-    fetch(`https://pollcat.vercel.app/polls/${pollId}` || `http://localhost:5173/poll/${pollId}`)
+    fetch(`https://pollcat.vercel.app/polls/${pollId}`)
       .then(response => response.json())
       .then(data => setPoll(data))
       .catch(() => setPoll(null));
