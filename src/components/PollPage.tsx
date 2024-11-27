@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import socket from '../socket.ts';
+//import socket from '../socket.ts';
 import PollVoting from './PollVoting';
 
 interface Poll {
