@@ -1,44 +1,37 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
-//import socket from '../socket.ts';
-import PollVoting from './PollVoting';
-
-interface Poll {
-  id: number;
-  question: string;
-  options: string[];
-}
+import { useParams } from 'react-router-dom';
+import axios from 'axios';
+import PollVoting from './PollVoting.tsx'
 
 const PollPage: React.FC = () => {
-  const { pollId } = useParams<{ pollId: string }>();
-  const [poll, setPoll] = useState<Poll | null>(null);
+  const { pollId } = useParams();
+  const [poll, setPoll] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`https://pollcat.vercel.app/polls/${pollId}`)
-      .then(response => response.json())
-      .then(data => setPoll(data))
-      .catch(() => setPoll(null));
+    axios.get(`/polls/${pollId}`)
+      .then(response => {
+        setPoll(response.data);
+        setLoading(false);
+      })
+      .catch(error => {
+        console.error('Error fetching poll:', error);
+        setLoading(false);
+      });
   }, [pollId]);
-  
 
-  if (!poll) {
-    return <p>Loading poll...</p>;
-  }
+  if (loading) return <p>Loading poll...</p>;
+  if (!poll) return <p>Poll not found.</p>;
 
   return (
     <div>
-      <header>
-        <Link to="/">Home</Link>
-        <button
-          onClick={() => {
-            localStorage.removeItem('token');
-            window.location.href = '/';
-          }}
-        >
-          Logout
-        </button>
-      </header>
-      <PollVoting/>
+      <h2>{poll.question}</h2>
+      <ul>
+        {poll.options.map((option: string, index: number) => (
+          <li key={index}>{option}</li>
+        ))}
+      </ul>
+      <PollVoting></PollVoting>
     </div>
   );
 };

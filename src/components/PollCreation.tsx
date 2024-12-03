@@ -22,7 +22,7 @@ const PollCreation: React.FC = () => {
     }
     socket.emit('create-poll', { question, options }, (response: { status: string; poll: any; link: string }) => {
       if (response.status === 'success') {
-        setPollLink(response.link); // Save the link to display it
+        setPollLink(response.link);
       }
     });
   
