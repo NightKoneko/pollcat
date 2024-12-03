@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import socket from '../socket.ts';
 import './PollVoting.css';
+import { Link } from 'react-router-dom';
 
 interface Poll {
   id: number;
@@ -89,6 +90,7 @@ const PollVoting: React.FC = () => {
             <li key={poll.id} className="poll-item">
               <div className="poll-title" onClick={() => togglePoll(poll.id)}>
                 <h3>{poll.question}</h3>
+                <Link to={`/poll/${poll.id}`}>{poll.question}</Link>
                 <button className="toggle-button">
                   {expandedPollId === poll.id ? '-' : '+'}
                 </button>
@@ -149,5 +151,4 @@ const PollVoting: React.FC = () => {
   );
 };
 
-//<Link to={`/poll/${poll.id}`}>{poll.question}</Link>
 export default PollVoting;
