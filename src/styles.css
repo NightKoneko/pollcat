@@ -145,7 +145,7 @@ p {
   bottom: 20px;
   right: 20px;
   display: flex;
-  align-items: center; /* Center-aligns both the text and the button */
+  align-items: center;
   gap: 10px;
   padding: 10px;
   background-color: #fff;

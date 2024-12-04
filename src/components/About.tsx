@@ -20,7 +20,7 @@ const About: React.FC = () => {
         <div className="modal-overlay" onClick={toggleModal}>
           <div
             className="modal-content"
-            onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside the modal
+            onClick={(e) => e.stopPropagation()}
           >
             <button className="close-button" onClick={toggleModal}>
               &times;

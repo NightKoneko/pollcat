@@ -1,3 +1,4 @@
+//this goes unused but maybe I'll use it in the future
 import axios from 'axios';
 
 const backendURL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000';
