@@ -119,7 +119,6 @@ app.post('/polls', authenticateJWT, (req, res) => {
 app.get('/polls/:pollId', (req, res) => {
   const { pollId } = req.params;
   const poll = activePolls.find(p => p.id === parseInt(pollId));
-
   if (!poll) {
     return res.status(404).json({ error: 'Poll not found' });
   }
@@ -210,7 +209,10 @@ io.on('connection', (socket) => {
   
     io.emit('active-polls', activePolls);
 
-    const pollLink = `https://pollcat.vercel.app/poll/${pollId}`;
+    const pollLink = process.env.NODE_ENV === 'production' 
+  ? `https://pollcat.vercel.app/poll/${pollId}`
+  : `http://localhost:5173/poll/${pollId}`;
+  
     console.log("Poll created:", newPoll);
   
     if (callback) callback({ status: 'success', poll: newPoll, link: pollLink });
