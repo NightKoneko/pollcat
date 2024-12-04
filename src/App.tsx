@@ -7,6 +7,7 @@ import DeletePolls from './components/DeletePolls';
 import Login from './components/Login';
 import Register from './components/Register';
 import PollPage from './components/PollPage';
+import About from './components/About';
 
 const useAuth = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
@@ -68,8 +69,10 @@ const App: React.FC = () => {
 
   return (
     <Router>
+      <p className="problem">If some things don't show up/aren't working, refresh the page</p>
       <img className="pollcatlogo" src="/pollcatlogo.png" alt="Pollcat Logo" />
       <div>
+        <About />
         <Routes>
           {isAuthenticated ? (
             <>
@@ -78,6 +81,7 @@ const App: React.FC = () => {
                 element={<AuthenticatedLayout onLogout={logout} username={username!} />}
               />
               <Route path="/poll/:pollId" element={<PollPage />} />
+              <Route path="/about" element={<About />} />
             </>
           ) : (
             <Route path="/" element={<UnauthenticatedLayout onLogin={login} />} />

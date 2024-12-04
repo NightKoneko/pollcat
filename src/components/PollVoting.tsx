@@ -3,19 +3,19 @@ import socket from '../socket.ts';
 import './PollVoting.css';
 import { Link } from 'react-router-dom';
 
-interface Poll {
-  id: number;
-  question: string;
-  options: string[];
-}
-
-interface PollResults {
-  pollId: number;
-  options: string[];
-  votes: number[];
-}
-
 const PollVoting: React.FC = () => {
+  interface Poll {
+    id: number;
+    question: string;
+    options: string[];
+  }
+  
+  interface PollResults {
+    pollId: number;
+    options: string[];
+    votes: number[];
+  }
+
   const [polls, setPolls] = useState<Poll[]>([]);
   const [expandedPollId, setExpandedPollId] = useState<number | null>(null);
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
@@ -90,13 +90,15 @@ const PollVoting: React.FC = () => {
             <li key={poll.id} className="poll-item">
               <div className="poll-title" onClick={() => togglePoll(poll.id)}>
                 <h3>{poll.question}</h3>
-                <Link to={`/poll/${poll.id}`}>{poll.question}</Link>
                 <button className="toggle-button">
                   {expandedPollId === poll.id ? '-' : '+'}
                 </button>
               </div>
               {expandedPollId === poll.id && (
                 <div className="poll-details">
+                  <Link to={`/poll/${poll.id}`}>Shareable Link</Link>
+                  <button onClick={() => navigator.clipboard.writeText(window.location.href + `poll/${poll.id}`)}>Copy Link</button>
+                  <p> </p>
                   {pollResults[poll.id] ? (
                     <div className="poll-results">
                       <h4>Results</h4>
