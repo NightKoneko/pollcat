@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import PollCreation from './components/PollCreation';
 import PollVoting from './components/PollVoting';
 import PollResults from './components/PollResults';
@@ -64,12 +64,23 @@ const UnauthenticatedLayout: React.FC<{ onLogin: (user: { username: string }) =>
   </div>
 );
 
+const ScrollToTop: React.FC = () => {
+  const location = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location]);
+
+  return null;
+};
+
 const App: React.FC = () => {
   const { isAuthenticated, username, login, logout } = useAuth();
 
   return (
     <Router>
-      <p className="problem">If some things don't show up/aren't working, refresh the page and wait. <br></br>The server can be a bit unreliable, sorry.</p>
+      <ScrollToTop />
+      <p className="problem">If some things don't show up/aren't working, refresh the page and wait. <br /> The server can be a bit unreliable, sorry.</p>
       <img className="pollcatlogo" src="/pollcatlogo.png" alt="Pollcat Logo" />
       <div>
         <About />
