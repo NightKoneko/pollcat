@@ -75,3 +75,7 @@
   }
 
   a { text-decoration: none; color:black; }
+
+  .tech-icon {
+    padding: 3px;
+  }

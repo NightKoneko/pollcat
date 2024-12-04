@@ -69,7 +69,7 @@ const App: React.FC = () => {
 
   return (
     <Router>
-      <p className="problem">If some things don't show up/aren't working, refresh the page</p>
+      <p className="problem">If some things don't show up/aren't working, refresh the page and wait. <br></br>The server can be a bit unreliable, sorry.</p>
       <img className="pollcatlogo" src="/pollcatlogo.png" alt="Pollcat Logo" />
       <div>
         <About />

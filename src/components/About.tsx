@@ -26,18 +26,7 @@ const About: React.FC = () => {
               &times;
             </button>
             <h2>About Pollcat</h2>
-            <p>
-              Welcome to the Pollcat webapp! This application allows users to create, vote, and view live poll results in
-              real-time.
-            </p>
-            <ul>
-              <li>📊 Real-time updates for poll results</li>
-              <li>📋 Simple and intuitive UI for creating and participating in polls</li>
-              <li>🔒 Ensures fairness by restricting multiple votes per user</li>
-            </ul>
-            <p>
-              Built using React, Node.js, and more to ensure seamless interactivity and responsiveness.
-            </p>
+            
             <p>Created by <a href='https://github.com/NightKoneko'>NightKoneko</a></p>
 
             {/* Footer */}
@@ -68,6 +57,33 @@ const About: React.FC = () => {
                   <a href="https://nodejs.org" target="_blank" rel="noopener noreferrer" className="tech-icon">
                     <img
                       src="https://upload.wikimedia.org/wikipedia/commons/d/d9/Node.js_logo.svg"
+                      alt="Node.js"
+                      className="w-8 h-8"
+                      style={{ width: '2rem', height: '2rem', fill: 'currentColor' }}
+                    />
+                  </a>
+                  {/* Vercel Icon */}
+                  <a href="https://vercel.com" target="_blank" rel="noopener noreferrer" className="tech-icon">
+                    <img
+                      src="https://assets.vercel.com/image/upload/front/favicon/vercel/favicon.ico"
+                      alt="Node.js"
+                      className="w-8 h-8"
+                      style={{ width: '2rem', height: '2rem', fill: 'currentColor' }}
+                    />
+                  </a>
+                  {/* Render Icon */}
+                  <a href="https://render.com" target="_blank" rel="noopener noreferrer" className="tech-icon">
+                    <img
+                      src="https://cdn.sanity.io/images/hvk0tap5/production/0ea63c1b6854bd803489557afb4ea54b85239418-128x128.png"
+                      alt="Node.js"
+                      className="w-8 h-8"
+                      style={{ width: '2rem', height: '2rem', fill: 'currentColor' }}
+                    />
+                  </a>
+                  {/* MongoDB Icon */}
+                  <a href="https://mongodb.com" target="_blank" rel="noopener noreferrer" className="tech-icon">
+                    <img
+                      src="https://www.mongodb.com/assets/images/global/favicon.ico"
                       alt="Node.js"
                       className="w-8 h-8"
                       style={{ width: '2rem', height: '2rem', fill: 'currentColor' }}
