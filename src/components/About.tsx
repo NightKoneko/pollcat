@@ -34,7 +34,7 @@ const About: React.FC = () => {
               <div className="flex flex-col justify-center text-sm font-light text-gray-400">
 
                   {/* GitHub Icon */}
-                  <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="tech-icon">
+                  <a href="https://github.com/NightKoneko/pollcat" target="_blank" rel="noopener noreferrer" className="tech-icon">
                     <svg
                       viewBox="0 0 24 24"
                       style={{ width: '2rem', height: '2rem', fill: 'currentColor' }}

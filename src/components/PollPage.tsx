@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import socket from '../socket.ts';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import './PollVoting.css';
 
 const PollPage: React.FC = () => {
@@ -144,6 +144,7 @@ const PollPage: React.FC = () => {
         </button>
         {voteError && <p className="error">{voteError}</p>}
       </div>
+      <button><Link to={`/`}>Home</Link></button>
     </div>
   );
 };
