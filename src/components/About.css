@@ -79,3 +79,22 @@
   .tech-icon {
     padding: 3px;
   }
+  
+  @keyframes rotate {
+    from {
+      transform: rotate(0deg);
+    }
+    to { 
+      transform: rotate(360deg);
+    }
+  }
+
+.littlepollcat {
+  width: 2em;
+  float:left;
+  margin-right: -5em;
+}
+
+.littlepollcatanimation {
+  animation: rotate 0.5s infinite linear;
+}

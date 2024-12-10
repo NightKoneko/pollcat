@@ -1,11 +1,23 @@
 import React, { useState } from 'react';
 import './About.css';
+import confetti from 'canvas-confetti';
 
 const About: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSpinning, setIsSpinning] = useState(false);
 
   const toggleModal = () => {
     setIsModalOpen((prev) => !prev);
+  };
+
+  const handleImageClick = () => {
+    setIsSpinning(true);
+    confetti({
+      particleCount: 100,
+      spread: 150,
+      origin: {  },
+    });
+    setTimeout(() => setIsSpinning(false), 1000);
   };
 
   return (
@@ -25,7 +37,14 @@ const About: React.FC = () => {
             <button className="close-button" onClick={toggleModal}>
               &times;
             </button>
+            <img
+              className={`littlepollcat ${isSpinning ? 'spinning' : ''}`}
+              src="../pollcatlogo_small.png"
+              onClick={handleImageClick}
+              alt="Pollcat Logo"
+            />
             <h2>About Pollcat</h2>
+              
             
             <p>Created by <a href='https://github.com/NightKoneko'>NightKoneko</a></p>
 
